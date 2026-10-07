@@ -60,6 +60,14 @@ h2{font-size:28px;letter-spacing:.01em}
 .pl.p1{--tc:var(--t1)}.pl.p2{--tc:var(--t2)}
 .hpn{display:flex;align-items:center;gap:6px;font:900 34px/.9 var(--f-disp);font-variant-numeric:tabular-nums}
 .hpn svg{width:20px;height:20px;fill:var(--tc)}
+.u2b{padding:2px 5px;background:var(--warn);color:#0E1822;font:900 9px/1 var(--f-disp);letter-spacing:.08em;white-space:nowrap}
+
+/* bandeau mutation / caisse */
+#rnote{display:flex;gap:6px;flex-wrap:wrap;margin-block:4px 0}
+#rnote[hidden]{display:none}
+#rnote span{display:flex;align-items:center;gap:6px;padding:4px 8px;background:var(--panel);border-left:3px solid var(--warn);font:600 11px/1.15 var(--f-body);color:#cfd3d4}
+#rnote b{color:var(--warn);font:900 12px/1 var(--f-disp);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+#rnote svg{width:14px;height:14px;flex:none;color:var(--warn)}
 .pips{display:flex;gap:2px}
 .pips i{width:8px;height:5px;background:var(--tc);transform:skewX(-20deg);transition:opacity .4s,background .4s}
 .pips i.off{opacity:.18}
@@ -146,19 +154,27 @@ h2{font-size:28px;letter-spacing:.01em}
 .ptitle h2{font-size:26px}
 .ptitle small{color:var(--mute);font-size:12px;text-align:right}
 #pboard{--ts:calc(var(--cellp)*.82);display:flex;flex-direction:column;align-self:center;width:calc(var(--cellp)*5)}
-.bar{height:26px;display:flex;align-items:center;justify-content:center;font:700 10px/1 var(--f-body);letter-spacing:.2em;color:var(--dim);text-transform:uppercase;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.03) 6px 12px);border:1px dashed var(--line)}
-.bar.foe{color:var(--fc);border-color:var(--fc);opacity:.7}
+.bar{position:relative;height:26px;display:flex;align-items:center;justify-content:center;font:700 10px/1 var(--f-body);letter-spacing:.2em;color:var(--dim);text-transform:uppercase;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.03) 6px 12px);border:1px dashed var(--line)}
+.bar.foe{color:var(--fc);border-color:var(--fc)}
+.bar.foe>b{opacity:.7;font:inherit}
+.bar .cm{position:absolute;top:2px;bottom:2px;width:20%;display:grid;place-items:center;color:var(--warn)}
+.bar .cm svg{height:100%;width:auto}
 .prow{display:grid;grid-template-columns:repeat(5,1fr);height:var(--cellp)}
 .pc{position:relative;display:grid;place-items:center;border:0;background:var(--bgc);box-shadow:inset 0 0 0 1px var(--line)}
 .pboard1{--bgc:rgba(58,217,197,.07);--fc:var(--t2)}.pboard2{--bgc:rgba(255,70,85,.07);--fc:var(--t1)}
 .pc:nth-child(odd){background-image:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035))}
 .pc.front::after{content:"";position:absolute;left:0;right:0;top:-2px;height:3px;background:var(--tc)}
 .pc.sel{box-shadow:inset 0 0 0 2px var(--fg);z-index:1}
+.pc.cr{box-shadow:inset 0 0 0 2px rgba(245,196,81,.6)}
+.crt{position:absolute;inset:18%;color:var(--warn);pointer-events:none;display:grid;place-items:center;animation:zn 1.2s ease-in-out infinite}
+.crt svg{width:100%;height:100%}
+.pc.occ .crt{inset:auto auto 2px 2px;width:20px;height:20px;background:var(--panel);z-index:2;animation:none}
 .pc.can:active{background:rgba(255,255,255,.12)}
 .pc .tok{animation:pop .22s ease-out}
 @keyframes pop{from{transform:scale(.6);opacity:0}}
 .neutral{height:22px;font-size:9px}
 .tray{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.tray[hidden]{display:none}
 .chip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 5px;background:var(--panel);border:1px solid transparent;--ts:38px;position:relative}
 .chip.sel{border-color:var(--fg);background:var(--panel2)}
 .chip.done .tok{opacity:.35}
@@ -194,23 +210,12 @@ h2{font-size:28px;letter-spacing:.01em}
 .u.pos .ui::after{border-color:var(--good);box-shadow:0 0 10px rgba(107,229,154,.75),inset 0 0 8px rgba(107,229,154,.4);animation:aura 1.4s ease-in-out infinite}
 .u.neg .tok{filter:saturate(.65) brightness(.9)}
 @keyframes aura{50%{opacity:.45}}
+.crate{position:absolute;width:var(--cellb);height:var(--cellb);padding:calc(var(--cellb)*.22);color:var(--warn);background:rgba(245,196,81,.12);box-shadow:inset 0 0 0 2px rgba(245,196,81,.6);animation:zn 1.2s ease-in-out infinite}
+.crate svg{width:100%;height:100%}
 .zn{position:absolute;width:var(--cellb);height:var(--cellb);display:grid;place-items:center;background:var(--fb);box-shadow:inset 0 0 0 1px var(--fc);animation:zn 1.2s ease-in-out infinite}
 .zn svg{width:38%;height:38%;color:var(--fc);opacity:.9}
 .zc{position:absolute;transform:translate(-50%,-50%);padding:2px 7px;background:rgba(14,24,34,.9);color:var(--fc);border:1px solid var(--fc);font:800 calc(var(--cellb)*.2)/1 var(--f-disp);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap}
 @keyframes zn{50%{opacity:.55}}
-.trp{position:absolute;width:var(--cellb);height:var(--cellb);display:grid;place-items:center}
-.trp i{width:calc(var(--cellb)*.22);height:calc(var(--cellb)*.22);transform:rotate(45deg);border:2px solid var(--tc);animation:zn 1s infinite}
-.fx{position:absolute;width:var(--cellb);height:var(--cellb);background:var(--tc);opacity:0;animation:fxf .9s ease-out forwards}
-@keyframes fxf{0%{opacity:.75}100%{opacity:0}}
-.fl{position:absolute;font:900 calc(var(--cellb)*.32)/1 var(--f-disp);color:#fff;text-shadow:0 1px 0 #000,0 0 5px rgba(0,0,0,.7);transform:translate(-50%,-50%);animation:fl 1.3s ease-out forwards;white-space:nowrap}
-.fl.heal{color:var(--good)}.fl.abs{color:var(--shield)}.fl.big{font-size:calc(var(--cellb)*.46);color:var(--warn)}
-@keyframes fl{0%{opacity:0;margin-top:0}12%{opacity:1}100%{opacity:0;margin-top:calc(var(--cellb)*-.7)}}
-.sk{position:absolute;transform:translate(-50%,-100%);padding:2px 6px;background:var(--tc);color:#0E1822;font:800 calc(var(--cellb)*.22)/1 var(--f-disp);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;animation:skf 1.6s ease-out forwards}
-@keyframes skf{0%{opacity:0;margin-top:6px}15%{opacity:1;margin-top:0}80%{opacity:1}100%{opacity:0}}
-.ring{position:absolute;width:var(--cellb);height:var(--cellb);border:2px solid var(--tc);border-radius:50%;animation:rg .8s ease-out forwards}
-@keyframes rg{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
-.beam{stroke-linecap:round;stroke-width:3;animation:bm .55s ease-out forwards}
-@keyframes bm{from{opacity:1}to{opacity:0}}
 .fxa{position:absolute;width:var(--cellb);height:var(--cellb);display:grid;place-items:center;background:var(--fb);box-shadow:inset 0 0 0 2px var(--fc);animation:fxa 2s ease-out forwards}
 .fxa svg{width:46%;height:46%;color:var(--fc);animation:fxi .5s ease-out both}
 @keyframes fxa{0%{opacity:0}10%{opacity:1}70%{opacity:1}100%{opacity:0}}
@@ -231,6 +236,19 @@ h2{font-size:28px;letter-spacing:.01em}
 .lgi .bd1{width:20px;height:20px;display:grid;place-items:center;flex:none;color:#fff;border-radius:4px}
 .lgi .bd1 svg{width:13px;height:13px}
 .lgi .bd1.neg{background:#A81C2C;border:1px solid var(--t2)}.lgi .bd1.pos{background:#17703F;border:1px solid var(--good)}
+.trp{position:absolute;width:var(--cellb);height:var(--cellb);display:grid;place-items:center}
+.trp i{width:calc(var(--cellb)*.22);height:calc(var(--cellb)*.22);transform:rotate(45deg);border:2px solid var(--tc);animation:zn 1s infinite}
+.fx{position:absolute;width:var(--cellb);height:var(--cellb);background:var(--tc);opacity:0;animation:fxf .9s ease-out forwards}
+@keyframes fxf{0%{opacity:.75}100%{opacity:0}}
+.fl{position:absolute;font:900 calc(var(--cellb)*.32)/1 var(--f-disp);color:#fff;text-shadow:0 1px 0 #000,0 0 5px rgba(0,0,0,.7);transform:translate(-50%,-50%);animation:fl 1.3s ease-out forwards;white-space:nowrap}
+.fl.heal{color:var(--good)}.fl.abs{color:var(--shield)}.fl.big{font-size:calc(var(--cellb)*.46);color:var(--warn)}
+@keyframes fl{0%{opacity:0;margin-top:0}12%{opacity:1}100%{opacity:0;margin-top:calc(var(--cellb)*-.7)}}
+.sk{position:absolute;transform:translate(-50%,-100%);padding:2px 6px;background:var(--tc);color:#0E1822;font:800 calc(var(--cellb)*.22)/1 var(--f-disp);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;animation:skf 1.6s ease-out forwards}
+@keyframes skf{0%{opacity:0;margin-top:6px}15%{opacity:1;margin-top:0}80%{opacity:1}100%{opacity:0}}
+.ring{position:absolute;width:var(--cellb);height:var(--cellb);border:2px solid var(--tc);border-radius:50%;animation:rg .8s ease-out forwards}
+@keyframes rg{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
+.beam{stroke-linecap:round;stroke-width:3;animation:bm .55s ease-out forwards}
+@keyframes bm{from{opacity:1}to{opacity:0}}
 #blog{min-height:34px;display:flex;align-items:center;gap:8px;font:600 15px/1.1 var(--f-body);border-left:3px solid var(--line);padding:4px 10px;background:var(--panel)}
 #blog b{font:900 17px/1 var(--f-disp);text-transform:uppercase;letter-spacing:.03em}
 #blog span.tk{margin-left:auto;font:700 11px/1 var(--f-body);letter-spacing:.14em;color:var(--mute);white-space:nowrap}
@@ -290,6 +308,7 @@ h2{font-size:28px;letter-spacing:.01em}
   </header>
   <div id="steps" hidden><i>Placement</i><i>Ultime</i><i>Combat</i><i>Résultat</i></div>
   <div id="net" hidden><i></i><span class="nm"></span><span class="st"></span><button id="quit">Quitter</button></div>
+  <div id="rnote" hidden></div>
 
   <section class="scr" id="s-intro">
     <div class="eyebrow">Stratégie 1 contre 1 · en ligne</div>
@@ -333,6 +352,7 @@ h2{font-size:28px;letter-spacing:.01em}
   <section class="scr" id="s-ult">
     <div class="ptitle"><h2 id="uwho"></h2><small id="uhint"></small></div>
     <div id="uboard"></div>
+    <div class="tray" id="upick" hidden></div>
     <div class="card" id="ucard"></div>
     <div class="act"><button class="btn ghost" id="uback">Retour</button><button class="btn primary" id="uok">Valider</button></div>
   </section>
@@ -357,9 +377,12 @@ h2{font-size:28px;letter-spacing:.01em}
     <ol>
       <li><b>Draft progressive.</b> 15 agents, 10 seront joués. Chaque manche, chacun choisit <b>un</b> agent, à tour de rôle (le premier choix alterne). On commence à 1 contre 1, jusqu’à 5 contre 5. Ensuite les manches continuent jusqu’à ce que quelqu’un tombe à 0 PV.</li>
       <li><b>★ Capitaine.</b> Ton premier agent est ton capitaine. Au début de <b>chaque</b> manche, tu dois lancer son <b>ultime</b>, en choisissant sa cible en secret (Sage : ressusciter un allié, inutilisable à 1 agent).</li>
-      <li><b>Placement secret et simultané.</b> Chaque manche, vous placez tous vos agents en même temps, chacun sur son téléphone, puis vous choisissez la cible de l’ultime. Le combat démarre quand les deux ont validé.</li>
-      <li><b>Combat automatique.</b> Chaque agent attaque l’ennemi le plus proche à portée (certains visent le plus faible), avance sinon, et lance ses compétences dès qu’elles sont prêtes. Aucun hasard.</li>
+      <li><b>✦ Second ultime.</b> À <b>5 PV ou moins</b>, tu dois aussi choisir, à chaque manche, un <b>second agent</b> dont l’ultime part en plus de celui du capitaine. Tu peux en changer à chaque manche.</li>
+      <li><b>Placement secret et simultané.</b> Chaque manche, vous placez tous vos agents en même temps, chacun sur son téléphone, puis vous choisissez la ou les cibles d’ultime. Le combat démarre quand les deux ont validé.</li>
+      <li><b>Caisse mystère.</b> De temps en temps, une caisse apparaît sur une case, <b>visible avant le placement</b>, dans le camp du joueur qui a le moins de PV. Le premier agent qui se trouve sur la case la prend : soin, bouclier, rage, vitesse… ou piège. Pose un agent dessus, ou espère qu’un ennemi la rejoigne.</li>
+      <li><b>Combat automatique.</b> Chaque agent attaque l’ennemi le plus proche à portée (certains visent le plus faible), avance sinon, et lance ses compétences dès qu’elles sont prêtes.</li>
       <li><b>Avant le combat</b>, ultimes, drones, pièges, tourelles, nuages et boucliers sont déjà en place.</li>
+      <li><b>À partir de la manche 6.</b> Une <b>mutation</b> change les règles de la manche (annoncée avant le placement), et des <b>faveurs</b> frappent un agent au hasard toutes les 5 ticks (4 dès la manche 8) : bouclier, renfort, affaiblissement ou silence. Un avertissement s’affiche un tick avant.</li>
       <li><b>Dégâts.</b> Le camp qui reste debout inflige autant de PV qu’il a de survivants. Chacun commence à 10 PV.</li>
       <li><b>Statuts.</b> Une icône <b>rouge</b> au-dessus d’un agent = malus (il est affaibli). Une icône <b>verte</b> = bonus. Pas besoin de tout retenir : le nom s’affiche quand l’effet arrive.<div id="lg"></div></li>
     </ol>
@@ -368,7 +391,7 @@ h2{font-size:28px;letter-spacing:.01em}
 </div>
 
 <script>
-/* Valo Tactic - moteur de combat deterministe (aucun hasard) */
+/* Valo Tactic - moteur de combat deterministe (le hasard vient de la graine fournie par la manche) */
 (function (g) {
 'use strict';
 
@@ -376,6 +399,15 @@ var COLS = 5, ROWS = 9, MID = 4, ENRAGE = 12, MAXT = 60;
 var HALF = { 1: [5, 8], 2: [0, 3] };   // lignes (y) de chaque camp
 var FRONT = { 1: 5, 2: 3 };            // ligne avant
 var NB = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+
+var CRATE_TYPES = ['heal', 'shield', 'rage', 'haste', 'trap'];
+var FAV = ['shield', 'buff', 'weak', 'sil'];
+var MUTS = [
+  { id: 'storm', name: 'Tempête', desc: 'Tous les dégâts +20 %.' },
+  { id: 'fog', name: 'Brouillard', desc: 'Portée −1 pour tous (minimum 1).' },
+  { id: 'armor', name: 'Armure', desc: 'Chaque agent démarre avec 10 de bouclier.' },
+  { id: 'vital', name: 'Vitalité', desc: 'PV max +20 % pour tous.' }
+];
 
 var AGENTS = [
   { id: 'jett', name: 'Jett', role: 'Duelliste', hp: 72, atk: 14, rng: 2, spd: 2, tgt: 'weak',
@@ -496,21 +528,38 @@ function q(S, src, dst, base, kind) { S.pend.push({ src: src, dst: dst, base: ba
 function addStatus(S, u, k, dur) {
   S.stq.push({ u: u, k: k, dur: dur });
 }
+function setSt(S, u, k, dur) {
+  u.st[k] = Math.max(u.st[k], dur + 1);
+  S.ev.push({ t: 'st', id: u.id, k: k });
+}
 function tele(S, u, x, y) {
   var f = [u.x, u.y];
   u.x = x; u.y = y;
   S.ev.push({ t: 'tele', id: u.id, from: f, to: [x, y] });
 }
 
+/* petit generateur pseudo-aleatoire (mulberry32) : meme graine = meme combat */
+function rnd(S) {
+  S.rs = (S.rs + 0x6D2B79F5) | 0;
+  var t = Math.imul(S.rs ^ (S.rs >>> 15), 1 | S.rs);
+  t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function freshSt() { return { blind: 0, root: 0, mark: 0, weak: 0, sil: 0, buff: 0, hid: 0, haste: 0 }; }
+
 function makeUnit(S, def, team, x, y, extra) {
   var u = {
     id: S.nid++, agent: def.id, team: team, x: x, y: y, sx: x, sy: y,
     hp: def.hp, mhp: def.hp, atk: def.atk, rng: def.rng, spd: def.spd, tgt: def.tgt || 'near',
     cds: (def.skills || []).map(function (s) { return s.cd0 || 0; }),
-    st: { blind: 0, root: 0, mark: 0, weak: 0, sil: 0, buff: 0, hid: 0 }, sh: 0, alive: true, summon: false, cap: false, ls: 0,
+    st: freshSt(), sh: 0, alive: true, summon: false, cap: false, cap2: false, ls: 0,
     revived: false, bonus: 0, owner: 0, inv: false
   };
   if (extra) for (var k in extra) u[k] = extra[k];
+  // mutations de manche
+  if (S.mut === 'fog') u.rng = Math.max(1, u.rng - 1);
+  if (S.mut === 'vital') { u.mhp = Math.round(u.mhp * 1.2); u.hp = u.mhp; }
+  if (S.mut === 'armor' && !u.summon) u.sh = 10;
   S.units.push(u);
   return u;
 }
@@ -520,10 +569,11 @@ function snap(S) {
     units: S.units.map(function (u) {
       return { id: u.id, agent: u.agent, team: u.team, x: u.x, y: u.y, hp: u.hp, mhp: u.mhp, sh: u.sh,
         alive: u.alive, summon: u.summon, atk: u.atk,
-        cap: u.cap, st: { blind: u.st.blind > 0, root: u.st.root > 0, mark: u.st.mark > 0, weak: u.st.weak > 0, sil: u.st.sil > 0, buff: u.st.buff > 0, hid: u.st.hid > 0 } };
+        cap: u.cap, st: { blind: u.st.blind > 0, root: u.st.root > 0, mark: u.st.mark > 0, weak: u.st.weak > 0, sil: u.st.sil > 0, buff: u.st.buff > 0, hid: u.st.hid > 0, haste: u.st.haste > 0 } };
     }),
     zones: S.zones.filter(function (z) { return z.until > S.tick; }).map(function (z) { return { cells: z.cells, team: z.team, kind: z.kind, dmg: z.dmg }; }),
-    traps: S.traps.filter(function (t) { return !t.used; }).map(function (t) { return { x: t.x, y: t.y, team: t.team }; })
+    traps: S.traps.filter(function (t) { return !t.used; }).map(function (t) { return { x: t.x, y: t.y, team: t.team }; }),
+    crate: S.crate ? { x: S.crate.x, y: S.crate.y } : null
   };
 }
 
@@ -543,7 +593,7 @@ function reviveAt(S, d, pct) {
       d.x = spots[i][0]; d.y = spots[i][1];
       d.alive = true;
       d.hp = Math.round(d.mhp * pct); d.sh = 0;
-      d.st = { blind: 0, root: 0, mark: 0, weak: 0, sil: 0, buff: 0, hid: 0 };
+      d.st = freshSt();
       S.ev.push({ t: 'revive', id: d.id, x: d.x, y: d.y });
       return true;
     }
@@ -587,6 +637,7 @@ function flush(S) {
     if (p.src && p.src.st.weak > 0) v *= 0.75;
     if (p.src && p.src.st.buff > 0) v *= 1.3;
     if (d.st.mark > 0) v *= 1.25;
+    if (S.mut === 'storm') v *= 1.2;
     v *= mult(S);
     v = Math.max(1, Math.round(v));
     var ab = Math.min(d.sh, v);
@@ -855,13 +906,51 @@ var ULTFN = {
   }
 };
 function foesIn(S, u, cells) { return S.units.filter(function (v) { return v.alive && v.team !== u.team && inCells(v, cells); }); }
-function castUlt(S, team) {
-  var cap = S.units.filter(function (u) { return u.team === team && u.cap && u.alive; })[0], spec = S.ult[team];
+function castUlt(S, team, which) {
+  var spec = which === 'cap2' ? S.ult2[team] : S.ult[team];
+  var cap = S.units.filter(function (u) { return u.team === team && u[which] && u.alive; })[0];
   if (!cap || !spec) return;
   var def = ULTS[cap.agent], cells = ultCells(cap.agent, team, spec);
   if (def.type !== 'none' && def.type !== 'ally' && !cells.length) return;
-  S.ev.push({ t: 'ult', a: cap.id, team: team, name: def.name, cells: cells });
+  S.ev.push({ t: 'ult', a: cap.id, team: team, name: def.name, cells: cells, which: which });
   ULTFN[cap.agent](S, cap, cells, spec);
+}
+
+/* ---------- caisse mystere ---------- */
+function crateCheck(S) {
+  if (!S.crate) return;
+  var w = at(S, S.crate.x, S.crate.y);
+  if (!w || w.summon) return;
+  var c = S.crate; S.crate = null;
+  S.ev.push({ t: 'crate', id: w.id, k: c.type, x: c.x, y: c.y });
+  if (c.type === 'heal') {
+    var v = Math.min(20, w.mhp - w.hp);
+    if (v > 0) { w.hp += v; S.ev.push({ t: 'heal', a: w.id, b: w.id, v: v, k: 'crate' }); }
+  } else if (c.type === 'shield') {
+    w.sh += 14; S.ev.push({ t: 'shield', b: w.id, v: 14 });
+  } else if (c.type === 'rage') setSt(S, w, 'buff', 5);
+  else if (c.type === 'haste') setSt(S, w, 'haste', 4);
+  else if (c.type === 'trap') { q(S, null, w, 10, 'trap'); setSt(S, w, 'root', 2); }
+}
+
+/* ---------- faveurs (manche 6 et +) ---------- */
+function prepFavor(S) {
+  var L = S.units.filter(function (u) { return u.alive && !u.summon; });
+  if (!L.length) return;
+  var u = L[Math.floor(rnd(S) * L.length)], k = FAV[Math.floor(rnd(S) * FAV.length)];
+  S.favNext = { id: u.id, k: k };
+  S.ev.push({ t: 'favwarn', id: u.id, k: k });
+}
+function applyFavor(S) {
+  var f = S.favNext; S.favNext = null;
+  if (!f) return;
+  var u = S.units.filter(function (x) { return x.id === f.id && x.alive; })[0];
+  if (!u) return;
+  S.ev.push({ t: 'fav', id: u.id, k: f.k });
+  if (f.k === 'shield') { u.sh += 14; S.ev.push({ t: 'shield', b: u.id, v: 14 }); }
+  else if (f.k === 'buff') setSt(S, u, 'buff', 4);
+  else if (f.k === 'weak') setSt(S, u, 'weak', 3);
+  else if (f.k === 'sil') setSt(S, u, 'sil', 2);
 }
 
 /* ---------- ciblage / mouvement ---------- */
@@ -877,8 +966,8 @@ function pickAttack(S, u) {
 }
 
 function moveUnit(S, u) {
-  var from = [u.x, u.y];
-  for (var s = 0; s < u.spd; s++) {
+  var from = [u.x, u.y], steps = u.spd + (u.st.haste > 0 ? 1 : 0);
+  for (var s = 0; s < steps; s++) {
     var F = foes(S, u);
     if (!F.length) break;
     var t = F.sort(cmpNear(u))[0];
@@ -908,7 +997,9 @@ function runTick(S, opening) {
   var i;
 
   if (opening) {
-    castUlt(S, first); castUlt(S, 3 - first);
+    crateCheck(S);
+    castUlt(S, first, 'cap'); castUlt(S, 3 - first, 'cap');
+    castUlt(S, first, 'cap2'); castUlt(S, 3 - first, 'cap2');
     runMobility(S, order, true);
     order.forEach(function (u) {
       var def = BYID[u.agent];
@@ -919,6 +1010,11 @@ function runTick(S, opening) {
     flush(S);
     S.units.forEach(function (u) { for (var s in u.st) if (u.st[s] > 0) u.st[s]--; });
     return;
+  }
+
+  if (S.favEvery) {
+    if (S.tick % S.favEvery === 0) applyFavor(S);
+    if ((S.tick + 1) % S.favEvery === 0) prepFavor(S);
   }
 
   var acted = {}, intents = [];
@@ -947,6 +1043,8 @@ function runTick(S, opening) {
     return b.spd - a.spd || ((a.team === first) ? 0 : 1) - ((b.team === first) ? 0 : 1) || a.x - b.x || cmpPos(a, b);
   });
   intents.forEach(function (u) { if (u.alive) moveUnit(S, u); });
+  // 3b. caisse
+  crateCheck(S);
   // 4. pieges et zones
   S.traps.forEach(function (t) {
     if (t.used) return;
@@ -1019,10 +1117,13 @@ function checkEnd(S, force) {
 
 function simulate(setup) {
   var S = { tick: 0, units: [], zones: [], traps: [], pend: [], heals: [], stq: [], ev: [], nid: 1, first: setup.first === 2 ? 2 : 1,
-    ult: setup.ult || {} };
-  var capOf = setup.cap || {};
+    ult: setup.ult || {}, ult2: setup.ult2 || {}, mut: setup.mut || null, rs: (setup.seed || 1) | 0, favEvery: setup.favEvery || 0, favNext: null,
+    crate: setup.crate ? { x: setup.crate.x, y: setup.crate.y, type: setup.crate.type } : null };
+  var capOf = setup.cap || {}, cap2Of = setup.cap2 || {};
   [1, 2].forEach(function (team) {
-    setup[team].forEach(function (p) { makeUnit(S, BYID[p.agent], team, p.x, p.y, { cap: capOf[team] === p.agent }); });
+    setup[team].forEach(function (p) {
+      makeUnit(S, BYID[p.agent], team, p.x, p.y, { cap: capOf[team] === p.agent, cap2: cap2Of[team] === p.agent });
+    });
   });
   var start = snap(S), frames = [];
   runTick(S, true);
@@ -1037,10 +1138,9 @@ function simulate(setup) {
   return { start: start, frames: frames, result: res };
 }
 
-g.VT = { COLS: COLS, ROWS: ROWS, MID: MID, HALF: HALF, FRONT: FRONT, AGENTS: AGENTS, BYID: BYID, ULTS: ULTS, simulate: simulate, ENRAGE: ENRAGE, ultCells: ultCells, ultUsable: ultUsable };
+g.VT = { COLS: COLS, ROWS: ROWS, MID: MID, HALF: HALF, FRONT: FRONT, AGENTS: AGENTS, BYID: BYID, ULTS: ULTS, simulate: simulate, ENRAGE: ENRAGE, ultCells: ultCells, ultUsable: ultUsable, CRATE_TYPES: CRATE_TYPES, MUTS: MUTS, FAV: FAV };
 if (typeof module !== 'undefined' && module.exports) module.exports = g.VT;
 })(typeof window !== 'undefined' ? window : globalThis);
-
 </script>
 <script>
 /* Valo Tactic - interface et jeu en ligne (2 telephones, Supabase Realtime en simple canal de messages) */
@@ -1078,6 +1178,10 @@ var EMB = {
 function emblem(id) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + EMB[id] + '</svg>'; }
 function tok(id, team, cls, cap) { return '<div class="tok t' + (team || 0) + (cls ? ' ' + cls : '') + '">' + (cap ? '<b class="cp">★</b>' : '') + emblem(id) + '<i>' + (id === 'turret' ? 'TOUR.' : BY[id].name.toUpperCase()) + '</i></div>'; }
 
+var CRATE_SVG = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" aria-hidden="true"><path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/></svg>';
+var CRATE_LBL = { heal: 'Caisse : +20 PV', shield: 'Caisse : bouclier', rage: 'Caisse : rage', haste: 'Caisse : vitesse', trap: 'Caisse piégée !' };
+var FAV_LBL = { shield: 'Bouclier', buff: 'Renforcé', weak: 'Affaibli', sil: 'Silence' };
+
 /* ---------- icones d'effets, statuts et zones (visuels : on comprend sans lire) ---------- */
 var ICO = {
   blind: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><path d="M4 4l16 16"/>',
@@ -1089,7 +1193,10 @@ var ICO = {
   hid: '<path d="M12 3c4 0 7 3 7 7v11l-3.5-2.5L12 21l-3.5-2.5L5 21V10c0-4 3-7 7-7z" stroke-dasharray="3 2.5"/>',
   dmg: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
   fire: EMB.phoenix, drop: EMB.viper, heal: EMB.sage, star: EMB.raze,
-  trap: '<path d="M12 3l9 9-9 9-9-9z"/>'
+  trap: '<path d="M12 3l9 9-9 9-9-9z"/>',
+  haste: '<path d="M5 6l6 6-6 6M12 6l6 6-6 6"/>',
+  crate: '<path d="M3 7l9-4 9 4v10l-9 4-9-4z"/><path d="M3 7l9 4 9-4M12 11v10"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'
 };
 function svgi(k) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ICO[k] + '</svg>'; }
 function rgba(hex, a) { var n = parseInt(hex.slice(1), 16); return 'rgba(' + (n >> 16) + ',' + ((n >> 8) & 255) + ',' + (n & 255) + ',' + a + ')'; }
@@ -1101,9 +1208,10 @@ var STN = {
   weak: { n: 'Affaibli', neg: 1, d: 'inflige 25 % de dégâts en moins' },
   sil: { n: 'Silence', neg: 1, d: 'ses compétences sont coupées' },
   buff: { n: 'Renforcé', neg: 0, d: 'inflige 30 % de dégâts en plus' },
+  haste: { n: 'Rapide', neg: 0, d: 'se déplace plus vite' },
   hid: { n: 'Invisible', neg: 0, d: 'les ennemis ne peuvent plus le cibler' }
 };
-var STK = ['blind', 'root', 'mark', 'weak', 'sil', 'buff', 'hid'];
+var STK = ['blind', 'root', 'mark', 'weak', 'sil', 'buff', 'haste', 'hid'];
 /* effet de chaque compétence / ultime a zone : couleur, icone, texte affiche sur les cases */
 var FX = {
   nade: { c: '#FF8A3D', ic: 'star', t: '−18 PV' },
@@ -1136,11 +1244,15 @@ var ZK = {
   orbital: { c: '#FF6B4A', ic: 'mark', t: 'Frappe' }
 };
 
+/* caisses et faveurs : couleur + icone */
+var CRATE_FX = { heal: { c: '#6BE59A', ic: 'heal' }, shield: { c: '#74B9FF', ic: 'shield' }, rage: { c: '#FF6B9A', ic: 'buff' }, haste: { c: '#FFB36B', ic: 'haste' }, trap: { c: '#FF4655', ic: 'trap' } };
+var FAV_FX = { shield: { c: '#74B9FF', ic: 'shield', t: 'Bouclier' }, buff: { c: '#6BE59A', ic: 'buff', t: 'Renforcé' }, weak: { c: '#FF4655', ic: 'weak', t: 'Affaibli' }, sil: { c: '#FF4655', ic: 'sil', t: 'Silence' } };
+
 /* ---------- etat reseau (journal partage) et etat d'interface ---------- */
 /* Le journal N.log contient toutes les decisions : p<n> picks, b<manche>_<equipe> placements+ultime, n<manche>_<equipe> "suivant".
    Chaque telephone en deduit tout le reste (phase, PV, combat) avec le moteur deterministe. */
 var N = { code: null, role: 0, gen: 1, log: {}, inGame: false, client: null, ch: null, status: 'off', peer: false, connAt: 0, checking: false, err: '', ct: 0 };
-var G = { r: 1, ph: null, pk: null, roster: { 1: [], 2: [] }, pick: null, shown: {}, hurt: {}, speed: 1, sim: null, simR: 0, token: 0, skipping: false, utgt: null, hasLast: false, flip: false };
+var G = { r: 1, ph: null, pk: null, roster: { 1: [], 2: [] }, pick: null, shown: {}, hurt: {}, speed: 1, sim: null, simR: 0, token: 0, skipping: false, utgt: null, hasLast: false, flip: false, ustage: 1, u1: null, u2: null, note: '' };
 var PL = {}, SEL = null;
 var app = $('#app');
 var cur = 'intro';
@@ -1160,12 +1272,29 @@ function rosters(maxPicks) {
   return R;
 }
 function owner(id) { var R = rosters(10); return R[1].indexOf(id) >= 0 ? 1 : R[2].indexOf(id) >= 0 ? 2 : 0; }
+/* tirages de la manche (caisse, mutation, graine) : derives du code de partie, donc identiques sur les deux telephones */
+function hashStr(t) { var x = 2166136261; for (var i = 0; i < t.length; i++) { x ^= t.charCodeAt(i); x = Math.imul(x, 16777619); } return x >>> 0; }
+function mulb(a) { return function () { a = (a + 0x6D2B79F5) | 0; var t = Math.imul(a ^ (a >>> 15), 1 | a); t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t; return ((t ^ (t >>> 14)) >>> 0) / 4294967296; }; }
+function favEveryOf(r) { return r >= 8 ? 4 : r >= 6 ? 5 : 0; }
+function rollOf(r) {
+  var f = mulb(hashStr(N.code + '|' + N.gen + '|' + r)), seed = Math.floor(f() * 2147483646) + 1, c = f(), sr = f(), fx = f(), fy = f(), ft = f(), fm = f();
+  var out = { seed: seed, crate: null, mut: null };
+  if (r >= 2 && c < 0.6) {
+    var hp = hpAfter(r - 1), side = hp[1] < hp[2] ? 1 : hp[2] < hp[1] ? 2 : (sr < 0.5 ? 1 : 2), ys = side === 1 ? [5, 6, 7, 8] : [0, 1, 2, 3];
+    out.crate = { x: Math.floor(fx * 5), y: ys[Math.floor(fy * 4)], type: VT.CRATE_TYPES[Math.floor(ft * VT.CRATE_TYPES.length)], side: side };
+  }
+  if (r >= 6) out.mut = VT.MUTS[Math.floor(fm * VT.MUTS.length)].id;
+  return out;
+}
 function roundSetup(r) {
   var m = Math.min(r, 5), R = rosters(m * 2);
   if (R[1].length < m || R[2].length < m) return null;
   var b1 = N.log['b' + r + '_1'], b2 = N.log['b' + r + '_2'];
   if (!b1 || !b2) return null;
-  var s = { 1: [], 2: [], first: r % 2 === 1 ? 1 : 2, cap: { 1: R[1][0], 2: R[2][0] }, ult: { 1: b1.ult || {}, 2: b2.ult || {} } };
+  var s = { 1: [], 2: [], first: r % 2 === 1 ? 1 : 2, cap: { 1: R[1][0], 2: R[2][0] }, ult: { 1: b1.ult || {}, 2: b2.ult || {} },
+    cap2: { 1: b1.ult2 ? b1.ult2.agent : null, 2: b2.ult2 ? b2.ult2.agent : null }, ult2: { 1: b1.ult2 ? b1.ult2.spec : {}, 2: b2.ult2 ? b2.ult2.spec : {} } };
+  var ro = rollOf(r);
+  s.crate = ro.crate ? { x: ro.crate.x, y: ro.crate.y, type: ro.crate.type } : null; s.mut = ro.mut; s.seed = ro.seed; s.favEvery = favEveryOf(r);
   [[1, b1], [2, b2]].forEach(function (p) {
     Object.keys(p[1].cells).sort(function (a, b) { var A = a.split(','), B = b.split(','); return (A[1] - B[1]) || (A[0] - B[0]); })
       .forEach(function (k) { var c = k.split(','); s[p[0]].push({ agent: p[1].cells[k], x: +c[0], y: +c[1] }); });
@@ -1306,9 +1435,11 @@ function updateNet() {
 /* ---------- ecrans ---------- */
 function fit() {
   var W = Math.min(window.innerWidth, 480) - 32, H = window.innerHeight;
-  var p = Math.max(44, Math.min(76, W / 5, (H - (H < 720 ? 500 : 450)) / 4));
-  var b = Math.max(38, Math.min(76, W / 5, (H - 252) / 9));
-  var u = Math.max(34, Math.min(70, W / 5, (H - 338) / 9));
+  var rn = $('#rnote'), nh = rn.hidden ? 0 : rn.offsetHeight + 4;
+  var p = Math.max(44, Math.min(76, W / 5, (H - (H < 720 ? 500 : 450) - nh) / 4));
+  var b = Math.max(38, Math.min(76, W / 5, (H - 252 - nh) / 9));
+  var s2 = G.ustage === 2 && cur === 'ult';
+  var u = Math.max(s2 ? 26 : 34, Math.min(70, W / 5, (H - 338 - nh - (s2 ? 96 : 0)) / 9));
   app.style.setProperty('--cellp', p + 'px');
   app.style.setProperty('--cellb', b + 'px');
   app.style.setProperty('--cellu', u + 'px');
@@ -1320,6 +1451,7 @@ function go(name) {
   var hud = name === 'place' || name === 'battle' || name === 'ult';
   $('#hud').hidden = !hud; $('#steps').hidden = !hud;
   $('#net').hidden = !(hud || name === 'draft');
+  $('#rnote').hidden = !(hud && G.note);
   fit();
 }
 function setStep(i) { $$('#steps i').forEach(function (e, k) { e.classList.toggle('on', k === i); e.classList.toggle('done', k < i); }); }
@@ -1331,6 +1463,8 @@ function renderHUD(r, hp, hurt) {
     var p = $('#pips' + t); p.innerHTML = '';
     for (var i = 0; i < 10; i++) p.appendChild(h('i', i < hp[t] ? '' : 'off'));
     $('#pl' + t + ' .pn').textContent = 'JOUEUR ' + t + (N.role === t ? ' · TOI' : '');
+    var hb = $('#pl' + t + ' .hpn'), old = hb.querySelector('.u2b'); if (old) old.remove();
+    if (hp[t] <= 5 && Math.min(r, 5) > 1) { var bd = h('span', 'u2b', '✦ 2ᵉ ULT'); if (t === 1) hb.appendChild(bd); else hb.insertBefore(bd, hb.firstChild); }
   });
   $('#rnd').textContent = r;
   if (hurt) { var el = $('#pl' + hurt); el.classList.remove('hurt'); void el.offsetWidth; el.classList.add('hurt'); }
@@ -1433,6 +1567,14 @@ function cardHTML(id) {
   return s;
 }
 
+/* ---------- bandeau de manche : mutation et caisse ---------- */
+function setNote(r) {
+  var ro = rollOf(r), m = ro.mut ? VT.MUTS.filter(function (x) { return x.id === ro.mut; })[0] : null, s = '';
+  if (m) s += '<span><b>' + m.name + '</b>' + m.desc + '</span>';
+  if (ro.crate) s += '<span>' + CRATE_SVG + '<b>Caisse</b>' + (ro.crate.side === N.role ? 'ton camp' : 'camp ennemi') + ' · col. ' + (ro.crate.x + 1) + ', rang ' + (ro.crate.side === 1 ? ro.crate.y - 4 : 4 - ro.crate.y) + '</span>';
+  G.note = s; $('#rnote').innerHTML = s;
+}
+
 /* ---------- pilotage des phases ---------- */
 function refresh() {
   if (!N.code) return;
@@ -1450,16 +1592,16 @@ function enter(ph) {
   if (ph.k === 'lobby') renderLobby();
   else if (ph.k === 'draft') { G.pick = null; go('draft'); renderDraft(); }
   else if (ph.k === 'build') {
-    G.roster = rosters(Math.min(ph.r, 5) * 2); G.utgt = null; initPlacement();
+    G.roster = rosters(Math.min(ph.r, 5) * 2); G.utgt = null; initPlacement(); setNote(ph.r);
     go('place'); setStep(0); renderHUD(ph.r, hpAfter(ph.r - 1)); renderPlace(); banner('Manche ' + ph.r);
   } else if (ph.k === 'wait') {
-    G.roster = rosters(Math.min(ph.r, 5) * 2);
+    G.roster = rosters(Math.min(ph.r, 5) * 2); setNote(ph.r);
     var mine = N.log['b' + ph.r + '_' + N.role]; PL = JSON.parse(JSON.stringify(mine.cells || {})); SEL = null;
     if (cur !== 'place' && cur !== 'ult') { go('place'); renderPlace(); }
     setStep(1); renderHUD(ph.r, hpAfter(ph.r - 1));
     curtain({ team: N.role, k: 'Manche ' + ph.r, t: 'Prêt !', p: 'En attente de ton ami. Le combat démarre dès qu’il a validé.' });
-  } else if (ph.k === 'battle') { G.sim = simOf(ph.r); G.simR = ph.r; renderHUD(ph.r, hpAfter(ph.r - 1)); setStep(2); go('battle'); playBattle(true); }
-  else if (ph.k === 'result') { showSheet(ph.r); }
+  } else if (ph.k === 'battle') { setNote(ph.r); G.sim = simOf(ph.r); G.simR = ph.r; renderHUD(ph.r, hpAfter(ph.r - 1)); setStep(2); go('battle'); playBattle(true); }
+  else if (ph.k === 'result') { setNote(ph.r); showSheet(ph.r); }
 }
 function soft(ph) {
   if (ph.k === 'lobby') renderLobby();
@@ -1528,16 +1670,18 @@ function placed(a) { for (var k in PL) if (PL[k] === a) return k; return null; }
 function renderPlace() {
   var t = N.role, rows = t === 1 ? [5, 6, 7, 8] : [3, 2, 1, 0], front = t === 1 ? 5 : 3, total = G.roster[t].length;
   $('#pwho').innerHTML = '<span class="t' + t + 'c">Joueur ' + t + '</span>';
-  $('#phint').innerHTML = G.hasLast ? 'Placement précédent repris.<br>Modifie-le ou valide.' : 'Touche un agent, puis une case.';
+  var ro = rollOf(G.r), cr = ro.crate;
+  $('#phint').innerHTML = cr ? 'Caisse mystère en jeu :<br>pose un agent dessus pour la prendre.' : G.hasLast ? 'Placement précédent repris.<br>Modifie-le ou valide.' : 'Touche un agent, puis une case.';
   var b = $('#pboard'); b.innerHTML = ''; b.className = 'pboard' + t; b.style.setProperty('--tc', tcol(t));
-  b.appendChild(h('div', 'bar foe', 'Camp ennemi')); b.appendChild(h('div', 'bar neutral', 'Zone neutre · pièges et nuages'));
+  b.appendChild(h('div', 'bar foe', '<b>Camp ennemi</b>' + (cr && cr.side !== t ? '<span class="cm" style="left:' + cr.x * 20 + '%">' + CRATE_SVG + '</span>' : ''))); b.appendChild(h('div', 'bar neutral', 'Zone neutre · pièges et nuages'));
   rows.forEach(function (y) {
     var r = h('div', 'prow');
     for (var x = 0; x < 5; x++) {
       (function (x, y) {
-        var k = x + ',' + y, a = PL[k];
-        var c = h('button', 'pc' + (y === front ? ' front' : '') + (a && SEL && SEL.from === 'cell' && SEL.k === k ? ' sel' : '') + (!a && SEL ? ' can' : ''), a ? tok(a, t, '', a === cap(t)) : '');
-        c.setAttribute('aria-label', 'Case ' + (x + 1) + (a ? ' ' + BY[a].name : ' vide'));
+        var k = x + ',' + y, a = PL[k], isCr = !!cr && cr.side === t && cr.x === x && cr.y === y;
+        var c = h('button', 'pc' + (y === front ? ' front' : '') + (a && SEL && SEL.from === 'cell' && SEL.k === k ? ' sel' : '') + (!a && SEL ? ' can' : '') + (isCr ? ' cr' + (a ? ' occ' : '') : ''),
+          (isCr ? '<span class="crt">' + CRATE_SVG + '</span>' : '') + (a ? tok(a, t, '', a === cap(t)) : ''));
+        c.setAttribute('aria-label', 'Case ' + (x + 1) + (a ? ' ' + BY[a].name : ' vide') + (isCr ? ', caisse mystère' : ''));
         c.onclick = function () { tapCell(x, y); };
         r.appendChild(c);
       })(x, y);
@@ -1553,7 +1697,7 @@ function renderPlace() {
   var n = Object.keys(PL).length, card = $('#pcard');
   card.className = 'card c' + t;
   card.innerHTML = SEL ? cardHTML(SEL.a) : '<p class="hint">La ligne avant (barre colorée) est ciblée en premier. Les agents derrière sont protégés, mais plus lents à entrer en jeu.</p>';
-  var ok = $('#pok'); ok.className = 'btn primary p' + t; ok.disabled = n < total; ok.textContent = n < total ? 'Valider ' + n + '/' + total : (VT.ultUsable(cap(t), total) ? 'Choisir l’ultime' : 'Valider');
+  var ok = $('#pok'); ok.className = 'btn primary p' + t; ok.disabled = n < total; ok.textContent = n < total ? 'Valider ' + n + '/' + total : (VT.ultUsable(cap(t), total) ? 'Choisir l’ultime' : (has2m() ? 'Choisir le 2ᵉ ultime' : 'Valider'));
 }
 function tapChip(a) {
   var k = placed(a);
@@ -1588,32 +1732,55 @@ $('#pauto').onclick = function () {
 };
 $('#pok').onclick = function () {
   var t = N.role; SEL = null;
-  if (VT.ultUsable(cap(t), G.roster[t].length)) startUlt(); else submitBuild({});
+  if (VT.ultUsable(cap(t), G.roster[t].length)) startUlt(1); else afterUlt1({});
 };
-function submitBuild(spec) {
+function has2m() { return need2(); }
+function cands2() {
+  var t = N.role, n = G.roster[t].length;
+  return G.roster[t].filter(function (a) { return a !== cap(t) && VT.ultUsable(a, n); });
+}
+function need2() { var hp = hpAfter(G.r - 1); return hp[N.role] <= 5 && G.roster[N.role].length > 1 && cands2().length > 0; }
+function afterUlt1(spec) {
+  G.u1 = spec;
+  if (need2()) startUlt(2); else submitBuild(spec, null);
+}
+function submitBuild(spec, u2) {
   var ph = G.ph; if (!ph || (ph.k !== 'build')) return;
-  act('b' + ph.r + '_' + N.role, { t: N.role, cells: JSON.parse(JSON.stringify(PL)), ult: spec });
+  act('b' + ph.r + '_' + N.role, { t: N.role, cells: JSON.parse(JSON.stringify(PL)), ult: spec, ult2: u2 || null });
 }
 
 /* ---------- ultime du capitaine ---------- */
-function ultKeyCell(def, x, y, t) {
+function ultKeyCell(def, x, y, t, c) {
   var foeRows = t === 1 ? [0, 3] : [5, 8];
-  if (def.type === 'ally') { var a = PL[x + ',' + y]; return !!a && a !== cap(t); }
+  if (def.type === 'ally') { var a = PL[x + ',' + y]; return !!a && a !== c; }
   return def.type !== 'none' && y >= foeRows[0] && y <= foeRows[1];
 }
-function startUlt() { G.utgt = null; setStep(1); go('ult'); renderUlt(); }
+function startUlt(stage) {
+  G.ustage = stage; G.utgt = null;
+  if (stage === 2) G.u2a = cands2()[0];
+  setStep(1); go('ult'); renderUlt();
+}
 function renderUlt() {
-  var t = N.role, c = cap(t), def = VT.ULTS[c], tc = tcol(t), flip = t === 2;
-  $('#uwho').innerHTML = '<span class="t' + t + 'c">★</span> ' + def.name;
+  var t = N.role, st = G.ustage, c = st === 2 ? G.u2a : cap(t), def = VT.ULTS[c], tc = tcol(t), flip = t === 2, sym = st === 2 ? '✦' : '★';
+  $('#uwho').innerHTML = '<span class="t' + t + 'c">' + sym + '</span> ' + def.name;
   $('#uhint').innerHTML = def.type === 'none' ? 'S’active seule.<br>Valide pour la lancer.' : def.type === 'ally' ? 'Touche l’allié à protéger.' : def.type === 'row' ? 'Touche une ligne ennemie.' : def.type === 'col' ? 'Touche une colonne ennemie.' : 'Touche une case ennemie.';
+  var pk = $('#upick'); pk.innerHTML = '';
+  if (st === 2) {
+    pk.hidden = false;
+    cands2().forEach(function (a) {
+      var ch = h('button', 'chip' + (a === G.u2a ? ' sel' : ''), tok(a, t, '', false) + '<span>' + BY[a].name + '</span>');
+      ch.onclick = function () { G.u2a = a; G.utgt = null; renderUlt(); };
+      pk.appendChild(ch);
+    });
+  } else pk.hidden = true;
   var spec = def.type === 'none' ? {} : G.utgt;
   var hl = spec ? VT.ultCells(c, t, spec) : [], hlk = {};
   hl.forEach(function (q) { hlk[q[0] + ',' + q[1]] = 1; });
   var ub = $('#uboard'); ub.innerHTML = '';
   for (var dy = 0; dy < 9; dy++) for (var x = 0; x < 5; x++) {
     (function (x, y) {
-      var k = x + ',' + y, own = (t === 1 ? y > 4 : y < 4), a = own ? PL[k] : null, can = ultKeyCell(def, x, y, t);
-      var e = h('button', 'uc ' + (y < 4 ? 'a' : y > 4 ? 'b' : 'm') + (can ? ' can' : '') + (hlk[k] ? ' hl' : '') + (spec && spec.x === x && spec.y === y && def.type !== 'none' ? ' pk' : ''), a ? tok(a, t, '', a === c) : '');
+      var k = x + ',' + y, own = (t === 1 ? y > 4 : y < 4), a = own ? PL[k] : null, can = ultKeyCell(def, x, y, t, c);
+      var e = h('button', 'uc ' + (y < 4 ? 'a' : y > 4 ? 'b' : 'm') + (can ? ' can' : '') + (hlk[k] ? ' hl' : '') + (spec && spec.x === x && spec.y === y && def.type !== 'none' ? ' pk' : ''), a ? tok(a, t, '', a === cap(t)) : '');
       e.style.setProperty('--tc', tc);
       if (can) e.onclick = function () { G.utgt = { x: x, y: y }; renderUlt(); };
       else e.disabled = true;
@@ -1621,16 +1788,22 @@ function renderUlt() {
     })(x, flip ? 8 - dy : dy);
   }
   $('#ucard').className = 'card c' + t;
-  $('#ucard').innerHTML = '<div class="chead"><b>' + def.name + '</b><span>Ultime de ' + BY[c].name + '</span></div><p>' + def.desc + '</p><p class="hint">Lancé automatiquement à l’ouverture du combat. ' +
+  $('#ucard').innerHTML = '<div class="chead"><b>' + def.name + '</b><span>' + (st === 2 ? '2ᵉ ultime (≤ 5 PV) · ' : 'Ultime de ') + BY[c].name + '</span></div><p>' + def.desc + '</p><p class="hint">Lancé automatiquement à l’ouverture du combat. ' +
     (def.type === 'ally' ? 'Rien ne se passe si l’allié ne meurt pas.' : 'Les ennemis ne bougent pas avant : vise leur placement probable.') + '</p>';
+  if (st === 2 && window.innerHeight < 760) { var hh = $('#ucard .hint'); if (hh) hh.remove(); }
   var ok = $('#uok'); ok.className = 'btn primary p' + t; ok.disabled = def.type !== 'none' && !G.utgt;
-  ok.textContent = def.type !== 'none' && !G.utgt ? 'Choisis une cible' : 'Valider l’ultime';
+  ok.textContent = def.type !== 'none' && !G.utgt ? 'Choisis une cible' : (st === 1 && need2() ? 'Suivant : 2ᵉ ultime' : 'Valider l’ultime');
 }
 $('#uok').onclick = function () {
-  var def = VT.ULTS[cap(N.role)];
-  submitBuild(def.type === 'none' ? {} : G.utgt);
+  var t = N.role, st = G.ustage, c = st === 2 ? G.u2a : cap(t), def = VT.ULTS[c], spec = def.type === 'none' ? {} : G.utgt;
+  if (st === 1) afterUlt1(spec);
+  else submitBuild(G.u1 || {}, { agent: c, spec: spec });
 };
-$('#uback').onclick = function () { setStep(0); go('place'); renderPlace(); };
+$('#uback').onclick = function () {
+  var t = N.role;
+  if (G.ustage === 2 && VT.ultUsable(cap(t), G.roster[t].length)) return startUlt(1);
+  setStep(0); go('place'); renderPlace();
+};
 
 /* ---------- combat : lecture de la simulation (identique sur les deux telephones) ---------- */
 var U = {}, LAST = {}, CELL = 56;
@@ -1643,7 +1816,7 @@ function buildBoard() {
   var bg = h('div', 'bg');
   for (var y = 0; y < 9; y++) for (var x = 0; x < 5; x++) { var ly = py(y); bg.appendChild(h('i', (ly < 4 ? 'a' : ly > 4 ? 'b' : 'm') + ((x + y) % 2 ? ' alt' : ''))); }
   b.appendChild(bg);
-  ['zl', 'tl', 'ul', 'zt'].forEach(function (id) { var l = h('div', 'layer'); l.id = id; b.appendChild(l); });
+  ['zl', 'tl', 'cl', 'ul', 'zt'].forEach(function (id) { var l = h('div', 'layer'); l.id = id; b.appendChild(l); });
   var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
   svg.setAttribute('class', 'layer'); svg.id = 'fxs'; svg.setAttribute('width', CELL * 5); svg.setAttribute('height', CELL * 9);
   b.appendChild(svg);
@@ -1697,6 +1870,8 @@ function applySnap(sn) {
   sn.traps.forEach(function (t) {
     var e = h('div', 'trp', '<i></i>'); e.style.setProperty('--tc', tcol(t.team));
     e.style.transform = 'translate(' + t.x * CELL + 'px,' + py(t.y) * CELL + 'px)'; tl.appendChild(e); });
+  var cl = $('#cl'); cl.innerHTML = '';
+  if (sn.crate) { var ce = h('div', 'crate', CRATE_SVG); ce.style.transform = 'translate(' + sn.crate.x * CELL + 'px,' + py(sn.crate.y) * CELL + 'px)'; cl.appendChild(ce); }
 }
 function cx(x) { return (x + .5) * CELL; }
 function cy(y) { return (py(y) + .5) * CELL; }
@@ -1762,8 +1937,8 @@ function beam(ax, ay, bx, by, team) {
   l.setAttribute('class', 'beam'); l.setAttribute('stroke', team === 1 ? '#3AD9C5' : '#FF4655');
   $('#fxs').appendChild(l); setTimeout(function () { l.remove(); }, 600);
 }
-function ultBanner(team, name, agent) {
-  var f = FX['U:' + agent], e = h('div', 'ub', emblem(agent) + '<span>' + name + (f ? '<small>' + f.t + '</small>' : '') + '</span>');
+function ultBanner(team, name, agent, which) {
+  var f = FX['U:' + agent], e = h('div', 'ub', emblem(agent) + '<span>' + (which === 'cap2' ? '✦ ' : '') + name + (f ? '<small>' + f.t + '</small>' : '') + '</span>');
   e.style.setProperty('--tc', tcol(team));
   var topSide = (team === 2) !== G.flip;
   e.style.top = (topSide ? CELL * 1.4 : CELL * 6.6) + 'px';
@@ -1780,8 +1955,8 @@ function playFrame(fr, fast) {
     var L = LAST[e.a];
     if (e.t === 'ult') {
       var CA = LAST[e.a];
-      if (CA) ultMsg = { team: e.team, who: BY[CA.agent].name, what: '★ ' + e.name };
-      if (!fast && CA) { ultBanner(e.team, e.name, CA.agent); areaFx(e.cells, FX['U:' + CA.agent]); }
+      if (CA) ultMsg = { team: e.team, who: BY[CA.agent].name, what: (e.which === 'cap2' ? '✦ ' : '★ ') + e.name };
+      if (!fast) { if (CA) ultBanner(e.team, e.name, CA.agent, e.which); areaFx(e.cells, FX['U:' + CA.agent]); }
     } else if (e.t === 'skill') {
       if (!fast) { tag(e.a, e.name); if (e.cells) areaFx(e.cells, FX[e.k]); }
       if (L) msg = { team: L.team, who: BY[L.agent].name, what: e.name };
@@ -1798,7 +1973,7 @@ function playFrame(fr, fast) {
       var Q = LAST[e.b]; if (Q && !fast) floatTxt(Q.x, Q.y, '+' + e.v, 'abs');
     } else if (e.t === 'st') {
       var SU = LAST[e.id], sk2 = e.id + e.k;
-      if (!fast && SU && SU.alive && !(SU.st && SU.st[e.k]) && !seenSt[sk2]) { seenSt[sk2] = 1; popStatus(e.id, e.k); }
+      if (!fast && SU && SU.alive && STN[e.k] && !(SU.st && SU.st[e.k]) && !seenSt[sk2]) { seenSt[sk2] = 1; popStatus(e.id, e.k); }
     } else if (e.t === 'tele') {
       if (!fast) ring(e.to[0], e.to[1], LAST[e.id] ? LAST[e.id].team : 1);
     } else if (e.t === 'die') {
@@ -1806,6 +1981,15 @@ function playFrame(fr, fast) {
     } else if (e.t === 'revive') {
       var R = LAST[e.id]; if (R && !fast) { tag(e.id, 'Revient !'); ring(e.x, e.y, R.team); }
       if (R) msg = { team: R.team, who: BY[R.agent].name, what: 'revient à la vie' };
+    } else if (e.t === 'crate') {
+      var W = LAST[e.id];
+      if (W) { if (!fast) { var cf = CRATE_FX[e.k] || CRATE_FX.heal; areaFx([[e.x, e.y]], { c: cf.c, ic: cf.ic, t: CRATE_LBL[e.k] || 'Caisse' }); ring(e.x, e.y, W.team); } msg = { team: W.team, who: BY[W.agent].name, what: CRATE_LBL[e.k] || 'Caisse' }; }
+    } else if (e.t === 'favwarn') {
+      var FW = LAST[e.id]; if (FW && !fast) ring(FW.x, FW.y, FW.team);
+      if (FW) msg = { team: FW.team, who: 'Faveur', what: BY[FW.agent].name + ' va être favorisé…' };
+    } else if (e.t === 'fav') {
+      var FV = LAST[e.id]; if (FV && !fast) { var ff = FAV_FX[e.k]; if (ff) areaFx([[FV.x, FV.y]], { c: ff.c, ic: ff.ic, t: 'Faveur : ' + ff.t }); ring(FV.x, FV.y, FV.team); }
+      if (FV) msg = { team: FV.team, who: 'Faveur', what: BY[FV.agent].name + ' : ' + (FAV_LBL[e.k] || '') };
     } else if (e.t === 'trap') {
       if (!fast) areaFx([[e.x, e.y]], FX.trapHit);
       if (LAST[e.id]) msg = { team: 3 - LAST[e.id].team, who: 'Piège', what: BY[LAST[e.id].agent].name + ' immobilisé' };
@@ -1825,7 +2009,7 @@ function playBattle(first) {
   if (!sim) return;
   buildBoard();
   sim.start.units.forEach(ensureUnit); applySnap(sim.start);
-  say(0, 'Combat', 'Ouverture : ultimes, drones, pièges, tourelles…', null);
+  say(0, 'Combat', 'Ouverture : ultimes ★ ✦, drones, pièges, tourelles…', null);
   $('#sheet').hidden = true;
   (first ? banner('Combat') : wait(200)).then(function () {
     var i = 0;
@@ -1835,7 +2019,7 @@ function playBattle(first) {
       if (i >= sim.frames.length) return finish();
       var fr = sim.frames[i++];
       playFrame(fr, false);
-      var big = fr.ev.some(function (e) { return e.t === 'ult'; }), actv = fr.ev.some(function (e) { return e.t === 'skill' || e.t === 'revive' || e.t === 'die'; });
+      var big = fr.ev.some(function (e) { return e.t === 'ult'; }), actv = fr.ev.some(function (e) { return e.t === 'skill' || e.t === 'revive' || e.t === 'die' || e.t === 'crate' || e.t === 'fav'; });
       setTimeout(step, (i === 1 ? (big ? 2900 : 1700) : (actv ? 1700 : 1250)) / G.speed);
     }
     function finish() { if (token === G.token) setTimeout(function () { if (token === G.token) afterBattle(); }, G.skipping ? 150 : 1000); }
