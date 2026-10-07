@@ -1,0 +1,1759 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Valo Tactic">
+<meta name="theme-color" content="#0E1822">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" href="icon.png">
+<title>Valo Tactic</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@700;800;900&family=Barlow+Semi+Condensed:wght@400;500;600;700&display=swap');
+:root{
+  --bg:#0E1822; --panel:#152331; --panel2:#1C2E3F; --line:#2B4052; --fg:#ECE8E1; --mute:#93A1AE; --dim:#5A6B7A;
+  --t1:#3AD9C5; --t1d:#103F47; --t2:#FF4655; --t2d:#4B1B27;
+  --good:#6BE59A; --shield:#74B9FF; --warn:#F5C451;
+  --f-disp:'Big Shoulders Display','Arial Narrow','Helvetica Neue',sans-serif;
+  --f-body:'Barlow Semi Condensed','Helvetica Neue',Arial,sans-serif;
+  --cellp:64px; --cellb:56px; --cellu:56px;
+  color-scheme:dark;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+[hidden]{display:none!important}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.3;overflow:hidden;overscroll-behavior:none;touch-action:manipulation;-webkit-user-select:none;user-select:none;-webkit-text-size-adjust:100%}
+button{font:inherit;color:inherit;border:0;background:none;padding:0;cursor:pointer}
+button:focus-visible{outline:2px solid var(--fg);outline-offset:2px}
+input{-webkit-user-select:text;user-select:text;font:inherit}
+#app{height:100%;max-width:480px;margin:0 auto;padding:max(10px,env(safe-area-inset-top)) 16px env(safe-area-inset-bottom);display:flex;flex-direction:column;position:relative;overflow:hidden}
+.scr{display:none;flex:1;min-height:0;flex-direction:column;gap:8px;padding-block:6px 10px;animation:scrIn .35s ease-out}
+.scr.on{display:flex}
+.scr>*{flex-shrink:0}
+.scr>.card{flex-shrink:1}
+@keyframes scrIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{font:600 11px/1 var(--f-body);letter-spacing:.18em;text-transform:uppercase;color:var(--mute)}
+h1,h2{font-family:var(--f-disp);font-weight:900;margin:0;text-transform:uppercase;line-height:.95;text-wrap:balance}
+h2{font-size:28px;letter-spacing:.01em}
+.t1c{color:var(--t1)}.t2c{color:var(--t2)}
+
+.btn{min-height:52px;padding:0 14px;white-space:nowrap;font:800 19px/1 var(--f-disp);letter-spacing:.08em;text-transform:uppercase;display:flex;align-items:center;justify-content:center;gap:8px;
+  clip-path:polygon(0 0,calc(100% - 12px) 0,100% 12px,100% 100%,12px 100%,0 calc(100% - 12px));transition:transform .12s,filter .12s,opacity .2s}
+.btn:active{transform:scale(.97);filter:brightness(1.15)}
+.btn.primary{background:var(--fg);color:#0E1822;flex:1}
+.btn.primary[disabled]{opacity:.35;pointer-events:none}
+.btn.ghost{background:var(--panel2);color:var(--fg);min-width:84px;font-size:16px}
+.btn.p1{background:var(--t1);color:#062A2E}.btn.p2{background:var(--t2);color:#2A0508}
+.act{display:flex;gap:10px;margin-top:auto}
+.act.col{flex-direction:column;margin-top:6px;width:100%}
+.act.col .btn,.act.col .btn.primary{flex:none;width:100%}
+
+/* HUD */
+#hud{display:grid;grid-template-columns:1fr auto 1fr;align-items:end;gap:8px;padding-top:6px}
+.pl{display:flex;flex-direction:column;gap:5px;min-width:0}
+.pl.r{align-items:flex-end}
+.pn{font:700 11px/1 var(--f-body);letter-spacing:.16em;color:var(--mute);white-space:nowrap}
+.pl.a .pn{color:var(--tc)}
+.pl.p1{--tc:var(--t1)}.pl.p2{--tc:var(--t2)}
+.hpn{display:flex;align-items:center;gap:6px;font:900 34px/.9 var(--f-disp);font-variant-numeric:tabular-nums}
+.hpn svg{width:20px;height:20px;fill:var(--tc)}
+.pips{display:flex;gap:2px}
+.pips i{width:8px;height:5px;background:var(--tc);transform:skewX(-20deg);transition:opacity .4s,background .4s}
+.pips i.off{opacity:.18}
+.rd{text-align:center;padding-bottom:2px}
+.rd small{display:block;font:600 10px/1 var(--f-body);letter-spacing:.2em;color:var(--mute)}
+.rd b{font:900 30px/1 var(--f-disp)}
+.pl.hurt .hpn{animation:hurt .6s}
+@keyframes hurt{0%,100%{transform:none}20%{transform:translateX(-4px);color:var(--t2)}40%{transform:translateX(4px)}60%{transform:translateX(-3px)}}
+#steps{display:flex;gap:4px;margin-block:8px 2px}
+#steps i{flex:1;white-space:nowrap;font:600 9.5px/1 var(--f-body);font-style:normal;letter-spacing:.05em;text-transform:uppercase;color:var(--dim);padding-top:6px;border-top:3px solid var(--line);text-align:left;transition:color .3s,border-color .3s}
+#steps i.on{color:var(--fg);border-color:var(--fg)}
+#steps i.done{color:var(--mute);border-color:var(--mute)}
+
+/* barre reseau */
+#net{display:flex;align-items:center;gap:8px;padding:6px 0 0;font:600 10.5px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+#net i{width:8px;height:8px;border-radius:50%;background:var(--dim);flex:none}
+#net i.ok{background:var(--good)}#net i.wn{background:var(--warn)}#net i.bad{background:var(--t2)}
+#net .st{margin-left:auto;color:var(--fg);text-align:right;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#net button{min-height:32px;padding:0 0 0 8px;color:var(--dim);font:700 10.5px/1 var(--f-body);letter-spacing:.1em;text-transform:uppercase}
+
+/* jetons agents */
+.tok{width:var(--ts,48px);height:var(--ts,48px);position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--fg);flex:none;
+  background:var(--tc);clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%)}
+.tok::before{content:"";position:absolute;inset:2px;background:var(--td);clip-path:polygon(22% 0,78% 0,100% 22%,100% 78%,78% 100%,22% 100%,0 78%,0 22%)}
+.tok svg{width:calc(var(--ts,48px)*.46);height:calc(var(--ts,48px)*.46);position:relative}
+.tok i{position:relative;font:700 calc(var(--ts,48px)*.16)/1 var(--f-body);font-style:normal;letter-spacing:.05em;margin-top:calc(var(--ts,48px)*.04)}
+.cp{position:absolute;top:calc(var(--ts,48px)*.02);left:50%;transform:translateX(-50%);font:700 calc(var(--ts,48px)*.2)/1 var(--f-body);color:var(--warn);z-index:1}
+.t0{--tc:#3A5266;--td:var(--panel2)}.t1{--tc:var(--t1);--td:var(--t1d)}.t2{--tc:var(--t2);--td:var(--t2d)}
+
+/* intro */
+#s-intro{justify-content:center;align-items:flex-start;gap:12px}
+.logo{font:900 76px/.82 var(--f-disp);text-transform:uppercase;letter-spacing:-.005em}
+.logo span{color:var(--t2);display:block}
+.tag{color:var(--mute);font-size:16px;max-width:30ch;margin:0}
+.demo{--ts:46px;display:grid;grid-template-columns:repeat(5,1fr);gap:6px;width:100%;margin-block:6px;position:relative}
+.demo .tok{justify-self:center}
+.demo hr{grid-column:1/-1;border:0;height:2px;background:repeating-linear-gradient(90deg,var(--line) 0 8px,transparent 8px 14px);margin:2px 0}
+.fine{font-size:11px;color:var(--dim);margin:0}
+.join{display:flex;gap:10px}
+.join input{flex:1;min-width:0;height:52px;background:var(--panel);border:1px solid var(--line);border-radius:0;color:var(--fg);font:800 28px/1 var(--f-disp);letter-spacing:.35em;text-indent:.35em;text-align:center;text-transform:uppercase;padding:0 8px}
+.join input:focus{outline:2px solid var(--fg);outline-offset:1px}
+.act.col .join .btn{flex:none;width:auto;min-width:130px}
+.lnk{align-self:flex-start;min-height:44px;padding:0 2px;font:600 13px/1 var(--f-body);letter-spacing:.12em;text-transform:uppercase;color:var(--mute);text-decoration:underline;text-underline-offset:4px}
+#i-err{min-height:14px;margin:0;font-size:13px;color:var(--t2)}
+
+/* lobby */
+#s-lobby{justify-content:center;gap:14px}
+.code{font:900 100px/1 var(--f-disp);letter-spacing:.1em;padding:6px 0}
+#lb-p{color:var(--mute);font-size:16px;margin:0;max-width:30ch}
+#lb-p.err{color:var(--t2)}
+
+/* draft */
+.rost{display:flex;flex-direction:column;gap:6px;padding:8px 10px;background:var(--panel);border-left:3px solid var(--line)}
+.rs{display:flex;align-items:center;gap:6px}
+.rs b{font:900 18px/1 var(--f-disp);width:26px;color:var(--tc)}
+.rs.p1{--tc:var(--t1)}.rs.p2{--tc:var(--t2)}
+.slot{--ts:38px;width:var(--ts);height:var(--ts);display:grid;place-items:center;flex:none}
+.slot.empty{border:1px dashed var(--line);clip-path:none}
+.slot.now{border-color:var(--tc);animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.4}}
+.pool{display:grid;grid-template-columns:repeat(5,1fr);gap:5px}
+.tile{display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 0 5px;background:var(--panel);border:1px solid transparent;position:relative;--ts:44px;transition:border-color .15s,opacity .2s}
+.tile .nm{font:700 10.5px/1 var(--f-body);letter-spacing:.04em;text-transform:uppercase}
+.tile .rl{font:500 9px/1 var(--f-body);color:var(--mute);letter-spacing:.04em}
+.tile.sel{border-color:var(--fg);background:var(--panel2)}
+.tile.taken{opacity:.4;pointer-events:none}
+.tile .own{position:absolute;top:3px;right:4px;font:900 10px/1 var(--f-disp);letter-spacing:.06em}
+.card{background:var(--panel);padding:10px 12px;border-left:3px solid var(--line);min-height:96px;display:flex;flex-direction:column;gap:5px;overflow:auto;flex:1 1 auto}
+.card.c1{border-left-color:var(--t1)}.card.c2{border-left-color:var(--t2)}
+.chead{display:flex;align-items:baseline;gap:8px}
+.chead b{font:900 24px/1 var(--f-disp);text-transform:uppercase}
+.chead span{font:600 11px/1 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}
+.stats{display:flex;gap:12px;font:600 11px/1 var(--f-body);letter-spacing:.1em;color:var(--mute)}
+.stats b{color:var(--fg);font:800 15px/1 var(--f-disp);margin-left:3px}
+.card p{margin:0;font-size:13px;color:#cfd3d4}
+.card p b{color:var(--fg)}
+.card p.tip{color:var(--warn);font-size:12.5px}
+.card p.ul{color:var(--fg);background:rgba(245,196,81,.1);border-left:2px solid var(--warn);padding:4px 8px}
+.card p.ul b{color:var(--warn)}
+.card .hint{color:var(--mute)}
+
+/* placement */
+.ptitle{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.ptitle h2{font-size:26px}
+.ptitle small{color:var(--mute);font-size:12px;text-align:right}
+#pboard{--ts:calc(var(--cellp)*.82);display:flex;flex-direction:column;align-self:center;width:calc(var(--cellp)*5)}
+.bar{height:26px;display:flex;align-items:center;justify-content:center;font:700 10px/1 var(--f-body);letter-spacing:.2em;color:var(--dim);text-transform:uppercase;background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.03) 6px 12px);border:1px dashed var(--line)}
+.bar.foe{color:var(--fc);border-color:var(--fc);opacity:.7}
+.prow{display:grid;grid-template-columns:repeat(5,1fr);height:var(--cellp)}
+.pc{position:relative;display:grid;place-items:center;border:0;background:var(--bgc);box-shadow:inset 0 0 0 1px var(--line)}
+.pboard1{--bgc:rgba(58,217,197,.07);--fc:var(--t2)}.pboard2{--bgc:rgba(255,70,85,.07);--fc:var(--t1)}
+.pc:nth-child(odd){background-image:linear-gradient(rgba(255,255,255,.035),rgba(255,255,255,.035))}
+.pc.front::after{content:"";position:absolute;left:0;right:0;top:-2px;height:3px;background:var(--tc)}
+.pc.sel{box-shadow:inset 0 0 0 2px var(--fg);z-index:1}
+.pc.can:active{background:rgba(255,255,255,.12)}
+.pc .tok{animation:pop .22s ease-out}
+@keyframes pop{from{transform:scale(.6);opacity:0}}
+.neutral{height:22px;font-size:9px}
+.tray{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.chip{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px 0 5px;background:var(--panel);border:1px solid transparent;--ts:38px;position:relative}
+.chip.sel{border-color:var(--fg);background:var(--panel2)}
+.chip.done .tok{opacity:.35}
+.chip.done::after{content:"";position:absolute;top:5px;right:6px;width:9px;height:5px;border-left:2px solid var(--good);border-bottom:2px solid var(--good);transform:rotate(-45deg)}
+.chip span{font:700 10px/1 var(--f-body);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+
+/* combat */
+#bwrap{display:flex;justify-content:center}
+#board{position:relative;--ts:calc(var(--cellb)*.8);touch-action:none}
+#board .bg{position:absolute;inset:0;display:grid;grid-template-columns:repeat(5,1fr);grid-template-rows:repeat(9,1fr)}
+#board .bg i{border:1px solid rgba(255,255,255,.04)}
+#board .bg i.a{background:rgba(255,70,85,.07)}#board .bg i.a.alt{background:rgba(255,70,85,.11)}
+#board .bg i.b{background:rgba(58,217,197,.07)}#board .bg i.b.alt{background:rgba(58,217,197,.11)}
+#board .bg i.m{background:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.04) 6px 12px)}
+.layer{position:absolute;inset:0;pointer-events:none}
+.u{position:absolute;left:0;top:0;width:var(--cellb);height:var(--cellb);display:grid;place-items:center;transition:transform .65s cubic-bezier(.3,.7,.3,1)}
+.u .ui{display:flex;flex-direction:column;align-items:center;gap:3px;transition:opacity .35s,transform .35s,filter .2s;position:relative}
+.u.dead .ui{opacity:0;transform:scale(.5) rotate(20deg)}
+.u.hit .ui{filter:brightness(2.2)}
+.u.hid .ui{opacity:.35}
+.u.sm .tok{--ts:calc(var(--cellb)*.56)}
+.hb{width:calc(var(--ts)*.9);height:5px;background:rgba(0,0,0,.55);position:relative;overflow:hidden}
+.hb .hf{position:absolute;inset:0 auto 0 0;background:var(--tc);transition:width .3s}
+.hb .hf.low{background:var(--warn)}
+.hb .sh{position:absolute;inset:0 auto 0 0;background:var(--shield);opacity:.85;height:2px;transition:width .3s}
+.bd{position:absolute;top:-3px;right:-6px;display:flex;flex-direction:column;gap:1px}
+.bd b{width:12px;height:12px;display:grid;place-items:center;font:800 8px/1 var(--f-body);color:#0E1822}
+.bd .s{background:#FF8AD8}.bd .u2{background:var(--good)}.bd .h{background:#9AA7B2}
+.bd .a{background:var(--warn)}.bd .i{background:var(--shield)}.bd .m{background:var(--t2);color:#fff}.bd .f{background:#B38CFF}
+.zn{position:absolute;width:var(--cellb);height:var(--cellb);animation:zn 1.2s ease-in-out infinite}
+.zn.z1{background:rgba(58,217,197,.22);box-shadow:inset 0 0 0 1px rgba(58,217,197,.55)}
+.zn.z2{background:rgba(255,70,85,.22);box-shadow:inset 0 0 0 1px rgba(255,70,85,.55)}
+@keyframes zn{50%{opacity:.55}}
+.trp{position:absolute;width:var(--cellb);height:var(--cellb);display:grid;place-items:center}
+.trp i{width:calc(var(--cellb)*.22);height:calc(var(--cellb)*.22);transform:rotate(45deg);border:2px solid var(--tc);animation:zn 1s infinite}
+.fx{position:absolute;width:var(--cellb);height:var(--cellb);background:var(--tc);opacity:0;animation:fxf .9s ease-out forwards}
+@keyframes fxf{0%{opacity:.75}100%{opacity:0}}
+.fl{position:absolute;font:900 calc(var(--cellb)*.32)/1 var(--f-disp);color:#fff;text-shadow:0 1px 0 #000,0 0 5px rgba(0,0,0,.7);transform:translate(-50%,-50%);animation:fl 1.3s ease-out forwards;white-space:nowrap}
+.fl.heal{color:var(--good)}.fl.abs{color:var(--shield)}.fl.big{font-size:calc(var(--cellb)*.46);color:var(--warn)}
+@keyframes fl{0%{opacity:0;margin-top:0}12%{opacity:1}100%{opacity:0;margin-top:calc(var(--cellb)*-.7)}}
+.sk{position:absolute;transform:translate(-50%,-100%);padding:2px 6px;background:var(--tc);color:#0E1822;font:800 calc(var(--cellb)*.22)/1 var(--f-disp);text-transform:uppercase;letter-spacing:.06em;white-space:nowrap;animation:skf 1.6s ease-out forwards}
+@keyframes skf{0%{opacity:0;margin-top:6px}15%{opacity:1;margin-top:0}80%{opacity:1}100%{opacity:0}}
+.ring{position:absolute;width:var(--cellb);height:var(--cellb);border:2px solid var(--tc);border-radius:50%;animation:rg .8s ease-out forwards}
+@keyframes rg{from{transform:scale(.3);opacity:1}to{transform:scale(1.4);opacity:0}}
+.beam{stroke-linecap:round;stroke-width:3;animation:bm .55s ease-out forwards}
+@keyframes bm{from{opacity:1}to{opacity:0}}
+#blog{min-height:34px;display:flex;align-items:center;gap:8px;font:600 15px/1.1 var(--f-body);border-left:3px solid var(--line);padding:4px 10px;background:var(--panel)}
+#blog b{font:900 17px/1 var(--f-disp);text-transform:uppercase;letter-spacing:.03em}
+#blog span.tk{margin-left:auto;font:700 11px/1 var(--f-body);letter-spacing:.14em;color:var(--mute);white-space:nowrap}
+
+/* ultime */
+.ub{position:absolute;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;background:var(--tc);color:#0E1822;font:900 calc(var(--cellb)*.26)/1 var(--f-disp);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;animation:ubf 2.2s ease-out forwards;z-index:3}
+.ub svg{width:calc(var(--cellb)*.32);height:calc(var(--cellb)*.32)}
+@keyframes ubf{0%{opacity:0;transform:translateX(-50%) scale(.6)}12%{opacity:1;transform:translateX(-50%) scale(1.08)}20%{transform:translateX(-50%) scale(1)}85%{opacity:1}100%{opacity:0}}
+#s-ult .ptitle h2{font-size:22px;white-space:nowrap}#s-ult .ptitle small{font-size:11px;max-width:15ch}
+#uboard{align-self:center;display:grid;grid-template-columns:repeat(5,var(--cellu));grid-auto-rows:var(--cellu);--ts:calc(var(--cellu)*.8);position:relative}
+.uc{position:relative;display:grid;place-items:center;border:0;background:var(--bgc,transparent);box-shadow:inset 0 0 0 1px rgba(255,255,255,.05)}
+.uc.a{--bgc:rgba(255,70,85,.08)}.uc.b{--bgc:rgba(58,217,197,.08)}
+.uc.m{--bgc:repeating-linear-gradient(135deg,transparent 0 6px,rgba(255,255,255,.04) 6px 12px)}
+.uc.can{box-shadow:inset 0 0 0 1px rgba(245,196,81,.5);animation:zn 1.2s ease-in-out infinite}
+.uc.hl::before{content:"";position:absolute;inset:0;background:rgba(245,196,81,.42);box-shadow:inset 0 0 0 2px var(--warn)}
+.uc.hl.pk::before{background:rgba(245,196,81,.62)}
+.uc .tok{position:relative;z-index:1}
+
+/* surcouches */
+.ovl{position:absolute;inset:0;z-index:20;display:flex;animation:ovIn .3s ease-out}
+@keyframes ovIn{from{opacity:0}}
+.ovl.center{align-items:center;justify-content:center;background:var(--bg);padding:24px}
+.cin{display:flex;flex-direction:column;gap:14px;width:100%;position:relative}
+.cin::before{content:"";position:absolute;left:-24px;right:-24px;top:-22px;bottom:-22px;background:var(--tc);opacity:.08;z-index:-1;animation:sweep .6s ease-out;transform-origin:left}
+@keyframes sweep{from{transform:scaleX(0)}}
+.cin h1{font-size:60px}
+.cin p{margin:0;color:var(--mute);font-size:16px;max-width:28ch}
+.cin .eyebrow{color:var(--tc)}
+.ovl.bottom{align-items:flex-end;background:linear-gradient(transparent 20%,rgba(8,13,19,.88));padding-inline:16px}
+.panel{width:100%;background:var(--panel);border-top:3px solid var(--tc);padding:16px 16px 14px;display:flex;flex-direction:column;gap:10px;animation:up .4s cubic-bezier(.2,.8,.2,1);margin-bottom:max(10px,env(safe-area-inset-bottom))}
+@keyframes up{from{transform:translateY(60%);opacity:0}}
+.panel h2{font-size:34px}
+.panel p{margin:0;color:#cfd3d4;font-size:15px}
+.sv{display:flex;gap:6px;--ts:40px;min-height:40px;align-items:center}
+.sv:empty{display:none}
+.dmg{display:flex;align-items:center;gap:10px;font:800 20px/1 var(--f-disp);letter-spacing:.04em;text-transform:uppercase}
+.dmg b{font-size:42px;color:var(--t2)}
+#rules .panel{max-height:88%;overflow:auto;margin:auto 0 10px;border-top-color:var(--fg)}
+#rules ol{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:14.5px;color:#cfd3d4}
+#rules ol b{color:var(--fg)}
+#banner{position:absolute;inset:0;display:none;align-items:center;justify-content:center;z-index:15;pointer-events:none}
+#banner.on{display:flex}
+#banner span{font:900 80px/1 var(--f-disp);text-transform:uppercase;padding:6px 26px;background:var(--fg);color:#0E1822;transform:skewX(-8deg);animation:bn 1s ease-out forwards;white-space:nowrap}
+@keyframes bn{0%{transform:skewX(-8deg) translateX(-110%)}22%{transform:skewX(-8deg) translateX(0)}78%{transform:skewX(-8deg) translateX(0);opacity:1}100%{transform:skewX(-8deg) translateX(40%);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01s!important;transition-duration:.01s!important}}
+@media (max-height:700px){.logo{font-size:60px}.cin h1{font-size:46px}.card{min-height:72px}.tile{--ts:38px}h2{font-size:24px}.code{font-size:80px}}
+@media (max-height:760px){.demo{display:none}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body>
+<div id="app">
+  <header id="hud" hidden>
+    <div class="pl p1 a" id="pl1"><span class="pn">JOUEUR 1</span><div class="hpn"><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z"/></svg><b id="hp1">10</b></div><div class="pips" id="pips1"></div></div>
+    <div class="rd"><small>MANCHE</small><b id="rnd">1</b></div>
+    <div class="pl p2 a r" id="pl2"><span class="pn">JOUEUR 2</span><div class="hpn"><b id="hp2">10</b><svg viewBox="0 0 24 24"><path d="M12 21s-8-5.3-8-11a4.5 4.5 0 0 1 8-2.8A4.5 4.5 0 0 1 20 10c0 5.7-8 11-8 11z"/></svg></div><div class="pips" id="pips2"></div></div>
+  </header>
+  <div id="steps" hidden><i>Placement</i><i>Ultime</i><i>Combat</i><i>Résultat</i></div>
+  <div id="net" hidden><i></i><span class="nm"></span><span class="st"></span><button id="quit">Quitter</button></div>
+
+  <section class="scr" id="s-intro">
+    <div class="eyebrow">Stratégie 1 contre 1 · en ligne</div>
+    <div class="logo">Valo<span>Tactic</span></div>
+    <p class="tag">Place tes agents. Le combat se joue tout seul, et tout se décide avant.</p>
+    <div class="demo" id="demo"></div>
+    <div class="act col">
+      <button class="btn p1" id="i-host">Créer une partie</button>
+      <div class="join"><input id="i-code" maxlength="4" placeholder="CODE" autocomplete="off" autocapitalize="characters" autocorrect="off" spellcheck="false" aria-label="Code de la partie"><button class="btn ghost" id="i-join">Rejoindre</button></div>
+      <p id="i-err" role="alert"></p>
+      <button class="btn ghost" id="i-resume" hidden>Reprendre la partie</button>
+      <button class="lnk" id="i-rules">Règles</button>
+    </div>
+    <p class="fine">Projet de fan, non affilié à Riot Games. Aucun visuel officiel utilisé.</p>
+  </section>
+
+  <section class="scr" id="s-lobby">
+    <div class="eyebrow" id="lb-k"></div>
+    <h2 id="lb-t"></h2>
+    <div class="code" id="lb-code"></div>
+    <p id="lb-p"></p>
+    <div class="act"><button class="btn ghost" id="lb-back">Retour</button><button class="btn primary p1" id="lb-share">Partager le lien</button></div>
+  </section>
+
+  <section class="scr" id="s-draft">
+    <div><div class="eyebrow" id="dk"></div><h2 id="dtitle"></h2></div>
+    <div class="rost"><div class="rs p1" id="r1"></div><div class="rs p2" id="r2"></div></div>
+    <div class="pool" id="pool"></div>
+    <div class="card" id="dcard"></div>
+    <div class="act"><button class="btn ghost" id="dauto">Aléatoire</button><button class="btn primary" id="dpick">Choisir</button></div>
+  </section>
+
+  <section class="scr" id="s-place">
+    <div class="ptitle"><h2 id="pwho"></h2><small id="phint"></small></div>
+    <div id="pboard"></div>
+    <div class="tray" id="tray"></div>
+    <div class="card" id="pcard"></div>
+    <div class="act"><button class="btn ghost" id="pauto">Aléatoire</button><button class="btn primary" id="pok">Valider</button></div>
+  </section>
+
+  <section class="scr" id="s-ult">
+    <div class="ptitle"><h2 id="uwho"></h2><small id="uhint"></small></div>
+    <div id="uboard"></div>
+    <div class="card" id="ucard"></div>
+    <div class="act"><button class="btn ghost" id="uback">Retour</button><button class="btn primary" id="uok">Valider</button></div>
+  </section>
+
+  <section class="scr" id="s-battle">
+    <div id="bwrap"><div id="board"></div></div>
+    <div id="blog"></div>
+    <div class="act"><button class="btn ghost" id="bspeed">×1</button><button class="btn ghost" id="bskip">Passer</button></div>
+  </section>
+
+  <div id="banner"><span id="bantxt"></span></div>
+
+  <div class="ovl center" id="curtain" hidden><div class="cin"><div class="eyebrow" id="cu-k"></div><h1 id="cu-t"></h1><p id="cu-p"></p><button class="btn primary" id="cu-b"></button><button class="lnk" id="cu-r">Rappel des règles</button></div></div>
+
+  <div class="ovl bottom" id="sheet" hidden><div class="panel" id="sh-p">
+    <div class="eyebrow" id="sh-k"></div><h2 id="sh-t"></h2><div class="sv" id="sh-s"></div><div class="dmg" id="sh-d"></div>
+    <div class="act"><button class="btn ghost" id="sh-r">Revoir</button><button class="btn primary" id="sh-n">Manche suivante</button></div>
+  </div></div>
+
+  <div class="ovl bottom" id="rules" hidden><div class="panel">
+    <div class="eyebrow">Règles</div><h2>Simple à comprendre</h2>
+    <ol>
+      <li><b>Draft progressive.</b> 15 agents, 10 seront joués. Chaque manche, chacun choisit <b>un</b> agent, à tour de rôle (le premier choix alterne). On commence à 1 contre 1, jusqu’à 5 contre 5. Ensuite les manches continuent jusqu’à ce que quelqu’un tombe à 0 PV.</li>
+      <li><b>★ Capitaine.</b> Ton premier agent est ton capitaine. Au début de <b>chaque</b> manche, tu dois lancer son <b>ultime</b>, en choisissant sa cible en secret (Sage : ressusciter un allié, inutilisable à 1 agent).</li>
+      <li><b>Placement secret et simultané.</b> Chaque manche, vous placez tous vos agents en même temps, chacun sur son téléphone, puis vous choisissez la cible de l’ultime. Le combat démarre quand les deux ont validé.</li>
+      <li><b>Combat automatique.</b> Chaque agent attaque l’ennemi le plus proche à portée (certains visent le plus faible), avance sinon, et lance ses compétences dès qu’elles sont prêtes. Aucun hasard.</li>
+      <li><b>Avant le combat</b>, ultimes, drones, pièges, tourelles, nuages et boucliers sont déjà en place.</li>
+      <li><b>Dégâts.</b> Le camp qui reste debout inflige autant de PV qu’il a de survivants. Chacun commence à 10 PV.</li>
+      <li><b>Statuts.</b> <b>A</b> aveuglé · <b>I</b> immobilisé · <b>M</b> marqué (+25 % dégâts subis) · <b>F</b> affaibli · <b>S</b> silence (plus de compétence) · <b>B</b> renforcé · <b>H</b> invisible.</li>
+    </ol>
+    <div class="act"><button class="btn primary" id="ru-ok">Compris</button></div>
+  </div></div>
+</div>
+
+<script>
+/* Valo Tactic - moteur de combat deterministe (aucun hasard) */
+(function (g) {
+'use strict';
+
+var COLS = 5, ROWS = 9, MID = 4, ENRAGE = 12, MAXT = 60;
+var HALF = { 1: [5, 8], 2: [0, 3] };   // lignes (y) de chaque camp
+var FRONT = { 1: 5, 2: 3 };            // ligne avant
+var NB = [[0, -1], [0, 1], [-1, 0], [1, 0]];
+
+var AGENTS = [
+  { id: 'jett', name: 'Jett', role: 'Duelliste', hp: 72, atk: 14, rng: 2, spd: 2, tgt: 'weak',
+    skills: [{ key: 'dash', name: 'Bourrasque', cd: 5, cd0: 1, mob: true,
+      desc: "Bondit jusqu'à 6 cases sur l'ennemi le plus fragile et le frappe (×1,8)." }],
+    tip: "Près d'un flanc : son bond vise l'ennemi le plus fragile à 6 cases." },
+  { id: 'raze', name: 'Raze', role: 'Duelliste', hp: 63, atk: 10, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'nade', name: 'Grenade', cd: 4, cd0: 2,
+      desc: "18 dégâts de zone sur le groupe d'ennemis le plus serré (portée 6)." }],
+    tip: "Sa grenade punit les ennemis collés les uns aux autres. Garde-la à portée." },
+  { id: 'reyna', name: 'Reyna', role: 'Duelliste', hp: 84, atk: 16, rng: 2, spd: 1, tgt: 'weak',
+    skills: [], passive: { name: 'Dévorer', desc: 'Chaque élimination rend 45 PV et donne +4 ATQ.' },
+    tip: "Corps à corps : elle cherche les kills. Laisse-lui des cibles affaiblies." },
+  { id: 'phoenix', name: 'Phoenix', role: 'Duelliste', hp: 74, atk: 12, rng: 2, spd: 1, tgt: 'near',
+    skills: [{ key: 'flash', name: 'Flash', cd: 5, cd0: 1,
+      desc: "Aveugle l'ennemi le plus dangereux et ses voisins pendant 1 tick." }],
+    passive: { name: 'Run it back', desc: 'Revient une fois à 50 % PV sur sa case de départ.' },
+    tip: "Sa renaissance a lieu sur sa case de départ : choisis-la bien." },
+  { id: 'sova', name: 'Sova', role: 'Initiateur', hp: 38, atk: 9, rng: 6, spd: 1, tgt: 'weak',
+    skills: [
+      { key: 'drone', name: 'Drone', cd: 99, cd0: 0, open: true,
+        desc: "Avant le combat : marque les 2 ennemis les plus proches (+25 % dégâts subis, 4 ticks)." },
+      { key: 'dart', name: 'Flèche choc', cd: 4, cd0: 0,
+        desc: "15 dégâts à l'ennemi le plus faible (portée 9)." }],
+    tip: "Derrière : sa portée de 6 et son drone agissent avant le premier tick." },
+  { id: 'omen', name: 'Omen', role: 'Contrôleur', hp: 84, atk: 13, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'shadow', name: "Pas de l'ombre", cd: 6, cd0: 0, open: true, mob: true,
+      desc: "Envoie l'ennemi le plus fort au fond de son camp, aveuglé 1 tick (portée 9)." }],
+    tip: "Il retarde leur meilleur attaquant avant même le début du duel." },
+  { id: 'viper', name: 'Viper', role: 'Contrôleur', hp: 60, atk: 8, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'cloud', name: 'Nuage toxique', cd: 8, cd0: 0, open: true,
+      desc: "Zone pendant 5 ticks : 5 dégâts par tick et −25 % d'attaque aux ennemis dedans." }],
+    tip: "Le nuage tombe sur l'ennemi de sa colonne : place-la face à leurs tanks." },
+  { id: 'sage', name: 'Sage', role: 'Sentinelle', hp: 63, atk: 7, rng: 3, spd: 1, tgt: 'near',
+    skills: [
+      { key: 'barrier', name: 'Barrière', cd: 99, cd0: 0, open: true,
+        desc: "Avant le combat : 14 de bouclier aux alliés à 2 cases ou moins." },
+      { key: 'heal', name: 'Soin', cd: 3, cd0: 1,
+        desc: "+20 PV à l'allié le plus blessé (portée 4)." }],
+    tip: "Au cœur de l'équipe : plus d'alliés à 2 cases, plus de boucliers." },
+  { id: 'killjoy', name: 'Killjoy', role: 'Sentinelle', hp: 58, atk: 10, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'turret', name: 'Tourelle', cd: 9, cd0: 0, open: true,
+      desc: "Pose un leurre qui tire (45 PV, portée 4) sur une case voisine, côté ennemi." }],
+    tip: "La tourelle apparaît à côté d'elle : colle-la à ta ligne avant." },
+  { id: 'cypher', name: 'Cypher', role: 'Sentinelle', hp: 62, atk: 10, rng: 4, spd: 1, tgt: 'near',
+    skills: [{ key: 'traps', name: 'Fils-pièges', cd: 99, cd0: 0, open: true,
+      desc: "3 pièges dans la zone neutre devant lui : 10 dégâts, immobilise 2 ticks, marque." }],
+    tip: "Colonne centrale : ses 3 pièges couvrent la zone neutre." },
+  { id: 'breach', name: 'Breach', role: 'Initiateur', hp: 88, atk: 12, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'quake', name: 'Onde de choc', cd: 5, cd0: 1,
+      desc: "10 dégâts et immobilise 2 ticks les ennemis en croix autour du plus proche (portée 6)." }],
+    tip: "Il fige la ligne avant ennemie : place-le assez près pour l'atteindre." },
+  { id: 'brimstone', name: 'Brimstone', role: 'Contrôleur', hp: 76, atk: 9, rng: 4, spd: 1, tgt: 'near',
+    skills: [{ key: 'stim', name: 'Stimulant', cd: 7, cd0: 0, open: true,
+      desc: "Alliés à 2 cases ou moins : +30 % d'attaque pendant 5 ticks (relancé toutes les 7 ticks)." }],
+    tip: "Au milieu de l'équipe : le stimulant profite à tous les alliés proches." },
+  { id: 'yoru', name: 'Yoru', role: 'Duelliste', hp: 76, atk: 14, rng: 2, spd: 1, tgt: 'weak',
+    skills: [{ key: 'behind', name: 'Porte dérobée', cd: 5, cd0: 1, mob: true,
+      desc: "Se téléporte derrière l'ennemi le plus dangereux (8 cases max) et le frappe (×1,5)." }],
+    tip: "Il frappe dans le dos : garde-lui de la place derrière les lignes ennemies." },
+  { id: 'kayo', name: 'KAY/O', role: 'Initiateur', hp: 80, atk: 11, rng: 3, spd: 1, tgt: 'near',
+    skills: [{ key: 'knife', name: 'Couteau suppresseur', cd: 4, cd0: 0,
+      desc: "12 dégâts à l'ennemi le plus dangereux (portée 7) et le réduit au silence 2 ticks." }],
+    tip: "Il coupe les compétences de leur meilleur agent : garde-le à portée de 7." },
+  { id: 'chamber', name: 'Chamber', role: 'Sentinelle', hp: 48, atk: 12, rng: 6, spd: 1, tgt: 'near',
+    skills: [{ key: 'snipe', name: "Tireur d'élite", cd: 4, cd0: 1,
+      desc: "20 dégâts à l'ennemi qui a le plus de PV (portée 8)." }],
+    tip: "Au fond : sa portée de 6 touche presque tout, mais il est fragile." }
+];
+
+/* Ultimes : seul le capitaine (1er agent choisi) peut utiliser le sien, a chaque manche, avant le combat.
+   type : ally (un allie) / cell (une case ennemie) / row (une ligne ennemie) / col (une colonne ennemie) / none */
+var ULTS = {
+  jett: { name: 'Tempête de lames', type: 'row', desc: "Choisis une ligne ennemie : chaque ennemi dessus subit 30 dégâts." },
+  raze: { name: 'Showstopper', type: 'cell', desc: "Roquette en croix sur la case choisie : 30 dégâts à chaque ennemi touché." },
+  reyna: { name: 'Impératrice', type: 'none', desc: "+35 % d'attaque et 30 % de vol de vie pendant tout le combat." },
+  phoenix: { name: 'Mur de flammes', type: 'col', desc: "Colonne de feu dans le camp ennemi pendant 5 ticks : 8 dégâts par tick." },
+  sova: { name: 'Fureur du chasseur', type: 'col', desc: "Salve sur une colonne ennemie : 24 dégâts et marque (+25 %) pendant 4 ticks." },
+  omen: { name: 'Dans les ténèbres', type: 'cell', desc: "Plonge une zone en croix dans le noir : les ennemis dedans sont aveuglés 4 ticks." },
+  viper: { name: 'Fosse de Viper', type: 'none', desc: "Gaz sur tout le camp ennemi et la zone neutre pendant 6 ticks : 3 dégâts par tick." },
+  sage: { name: 'Résurrection', type: 'ally', desc: "Choisis un allié : s'il meurt, il revient une fois à 50 % PV." },
+  killjoy: { name: 'Lockdown', type: 'cell', desc: "Ennemis à 2 cases ou moins de la case choisie : aveuglés 2 ticks, immobilisés 3 ticks." },
+  cypher: { name: 'Vol neuronal', type: 'none', desc: "Révèle l'équipe ennemie : tous les ennemis marqués (+25 % dégâts subis) 5 ticks." },
+  breach: { name: 'Tonnerre roulant', type: 'col', desc: "Séisme sur une colonne ennemie : 14 dégâts, aveugle et immobilise 2 ticks." },
+  brimstone: { name: 'Frappe orbitale', type: 'cell', desc: "Rayon en croix pendant 4 ticks : 9 dégâts par tick aux ennemis dedans." },
+  yoru: { name: 'Dérive dimensionnelle', type: 'none', desc: "Invisible 5 ticks : les ennemis ne peuvent plus le cibler." },
+  kayo: { name: 'NULL/cmd', type: 'none', desc: "Réduit au silence toute l'équipe ennemie 5 ticks : plus aucune compétence." },
+  chamber: { name: 'Tour de force', type: 'cell', desc: "Tir de précision : 55 dégâts sur la case choisie, 20 aux ennemis en croix autour." }
+};
+AGENTS.forEach(function (a) { a.ult = ULTS[a.id]; });
+var TURRET = { id: 'turret', name: 'Tourelle', role: 'Invocation', hp: 40, atk: 7, rng: 4, spd: 0, tgt: 'near', skills: [] };
+var BYID = {};
+AGENTS.forEach(function (a) { BYID[a.id] = a; });
+BYID.turret = TURRET;
+
+/* ---------- utilitaires ---------- */
+function dist(a, b) { return Math.abs(a.x - b.x) + Math.abs(a.y - b.y); }
+function inb(x, y) { return x >= 0 && x < COLS && y >= 0 && y < ROWS; }
+function at(S, x, y) { for (var i = 0; i < S.units.length; i++) { var u = S.units[i]; if (u.alive && u.x === x && u.y === y) return u; } return null; }
+function free(S, x, y) { return inb(x, y) && !at(S, x, y); }
+function foes(S, u) { return S.units.filter(function (v) { return v.alive && v.team !== u.team && !(v.st.hid > 0); }); }
+function allies(S, u) { return S.units.filter(function (v) { return v.alive && v.team === u.team; }); }
+function cmpNear(u) {
+  return function (a, b) {
+    return dist(u, a) - dist(u, b) || a.hp - b.hp || Math.abs(a.x - u.x) - Math.abs(b.x - u.x) || cmpPos(a, b);
+  };
+}
+function cmpPos(a, b) { return Math.abs(a.y - MID) - Math.abs(b.y - MID) || a.x - b.x; }
+function plus(c, r) {
+  var out = [];
+  for (var dx = -r; dx <= r; dx++) for (var dy = -r; dy <= r; dy++) {
+    if (Math.abs(dx) + Math.abs(dy) <= r && inb(c.x + dx, c.y + dy)) out.push([c.x + dx, c.y + dy]);
+  }
+  return out;
+}
+function mult(S) { return S.tick >= ENRAGE ? 1 + 0.1 * (S.tick - ENRAGE + 1) : 1; }
+function q(S, src, dst, base, kind) { S.pend.push({ src: src, dst: dst, base: base, kind: kind }); }
+function addStatus(S, u, k, dur) {
+  S.stq.push({ u: u, k: k, dur: dur });
+}
+function tele(S, u, x, y) {
+  var f = [u.x, u.y];
+  u.x = x; u.y = y;
+  S.ev.push({ t: 'tele', id: u.id, from: f, to: [x, y] });
+}
+
+function makeUnit(S, def, team, x, y, extra) {
+  var u = {
+    id: S.nid++, agent: def.id, team: team, x: x, y: y, sx: x, sy: y,
+    hp: def.hp, mhp: def.hp, atk: def.atk, rng: def.rng, spd: def.spd, tgt: def.tgt || 'near',
+    cds: (def.skills || []).map(function (s) { return s.cd0 || 0; }),
+    st: { blind: 0, root: 0, mark: 0, weak: 0, sil: 0, buff: 0, hid: 0 }, sh: 0, alive: true, summon: false, cap: false, ls: 0,
+    revived: false, bonus: 0, owner: 0, inv: false
+  };
+  if (extra) for (var k in extra) u[k] = extra[k];
+  S.units.push(u);
+  return u;
+}
+
+function snap(S) {
+  return {
+    units: S.units.map(function (u) {
+      return { id: u.id, agent: u.agent, team: u.team, x: u.x, y: u.y, hp: u.hp, mhp: u.mhp, sh: u.sh,
+        alive: u.alive, summon: u.summon, atk: u.atk,
+        cap: u.cap, st: { blind: u.st.blind > 0, root: u.st.root > 0, mark: u.st.mark > 0, weak: u.st.weak > 0, sil: u.st.sil > 0, buff: u.st.buff > 0, hid: u.st.hid > 0 } };
+    }),
+    zones: S.zones.filter(function (z) { return z.until > S.tick; }).map(function (z) { return { cells: z.cells, team: z.team }; }),
+    traps: S.traps.filter(function (t) { return !t.used; }).map(function (t) { return { x: t.x, y: t.y, team: t.team }; })
+  };
+}
+
+/* ---------- degats ---------- */
+function reviveAt(S, d, pct) {
+  var spots = [[d.sx, d.sy]];
+  for (var r = 1; r < 6; r++) {
+    for (var dx = -r; dx <= r; dx++) for (var dy = -r; dy <= r; dy++) {
+      if (Math.abs(dx) + Math.abs(dy) === r) {
+        var x = d.sx + dx, y = d.sy + dy;
+        if (inb(x, y) && y >= HALF[d.team][0] && y <= HALF[d.team][1]) spots.push([x, y]);
+      }
+    }
+  }
+  for (var i = 0; i < spots.length; i++) {
+    if (free(S, spots[i][0], spots[i][1])) {
+      d.x = spots[i][0]; d.y = spots[i][1];
+      d.alive = true;
+      d.hp = Math.round(d.mhp * pct); d.sh = 0;
+      d.st = { blind: 0, root: 0, mark: 0, weak: 0, sil: 0, buff: 0, hid: 0 };
+      S.ev.push({ t: 'revive', id: d.id, x: d.x, y: d.y });
+      return true;
+    }
+  }
+  return false;
+}
+
+function kill(S, d, src) {
+  d.hp = 0; d.alive = false;
+  if (d.agent === 'phoenix' && !d.revived && reviveAt(S, d, 0.5)) { d.revived = true; return; }
+  if (d.res && !d.resDone && reviveAt(S, d, 0.5)) { d.resDone = true; return; }
+  S.ev.push({ t: 'die', id: d.id });
+  if (src && src.alive && src.agent === 'reyna') {
+    src.hp = Math.min(src.mhp, src.hp + 45);
+    if (src.bonus < 12) { src.bonus += 4; src.atk += 4; }
+    S.ev.push({ t: 'heal', a: src.id, b: src.id, v: 45, k: 'devour' });
+  }
+}
+
+function flush(S) {
+  S.stq.forEach(function (s) {
+    if (!s.u.alive) return;
+    s.u.st[s.k] = Math.max(s.u.st[s.k], s.dur + 1);
+    S.ev.push({ t: 'st', id: s.u.id, k: s.k });
+  });
+  S.stq = [];
+  S.heals.forEach(function (h) {
+    if (!h.dst.alive) return;
+    var v = Math.min(h.v, h.dst.mhp - h.dst.hp);
+    if (v <= 0) return;
+    h.dst.hp += v;
+    S.ev.push({ t: 'heal', a: h.src.id, b: h.dst.id, v: v, k: 'heal' });
+  });
+  S.heals = [];
+  var list = S.pend; S.pend = [];
+  var dead = [], credit = {};
+  for (var i = 0; i < list.length; i++) {
+    var p = list[i], d = p.dst;
+    if (!d.alive) continue;
+    var v = p.base;
+    if (p.src && p.src.st.weak > 0) v *= 0.75;
+    if (p.src && p.src.st.buff > 0) v *= 1.3;
+    if (d.st.mark > 0) v *= 1.25;
+    v *= mult(S);
+    v = Math.max(1, Math.round(v));
+    var ab = Math.min(d.sh, v);
+    d.sh -= ab;
+    d.hp -= (v - ab);
+    S.ev.push({ t: 'hit', a: p.src ? p.src.id : 0, b: d.id, v: v, ab: ab, k: p.kind,
+      ax: p.src ? p.src.x : d.x, ay: p.src ? p.src.y : d.y, bx: d.x, by: d.y });
+    if (p.src && p.src.ls && p.src.alive && p.src.hp > 0) {
+      var hh = Math.min(p.src.mhp - p.src.hp, Math.round((v - ab) * p.src.ls));
+      if (hh > 0) { p.src.hp += hh; S.ev.push({ t: 'heal', a: p.src.id, b: p.src.id, v: hh, k: 'ls' }); }
+    }
+    if (d.hp <= 0 && !(d.id in credit)) { credit[d.id] = p.src; dead.push(d); }
+  }
+  // les morts sont traitees apres tous les degats : resolution simultanee
+  dead.sort(function (a, b) { return a.id - b.id; });
+  dead.forEach(function (d) { kill(S, d, credit[d.id]); });
+}
+
+/* ---------- competences ---------- */
+var SK = {
+  dash: function (S, u) {
+    var cands = foes(S, u).filter(function (v) { return !v.summon; })
+      .sort(function (a, b) { return a.hp - b.hp || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+    var burst = Math.round(u.atk * 1.8);
+    for (var i = 0; i < cands.length; i++) {
+      var v = cands[i];
+      if (!(dist(u, v) > u.rng || v.hp <= burst)) continue;
+      var cells = NB.map(function (n) { return [v.x + n[0], v.y + n[1]]; })
+        .filter(function (c) { return free(S, c[0], c[1]) && Math.abs(c[0] - u.x) + Math.abs(c[1] - u.y) <= 6; });
+      if (!cells.length) continue;
+      cells.sort(function (a, b) {
+        return (Math.abs(a[0] - u.x) + Math.abs(a[1] - u.y)) - (Math.abs(b[0] - u.x) + Math.abs(b[1] - u.y)) ||
+          Math.abs(a[1] - MID) - Math.abs(b[1] - MID) || a[0] - b[0];
+      });
+      return (function (v, cell, vx, vy) {
+        return {
+          valid: function () { return v.alive && v.x === vx && v.y === vy && free(S, cell[0], cell[1]); },
+          run: function () {
+            S.ev.push({ t: 'skill', a: u.id, k: 'dash', name: 'Bourrasque' });
+            tele(S, u, cell[0], cell[1]);
+            q(S, u, v, burst, 'skill');
+          }
+        };
+      })(v, cells[0], v.x, v.y);
+    }
+    return false;
+  },
+  shadow: function (S, u) {
+    var cands = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 9; })
+      .sort(function (a, b) { return b.atk - a.atk || b.hp - a.hp || cmpPos(a, b); });
+    for (var i = 0; i < cands.length; i++) {
+      var v = cands[i], f = FRONT[v.team], dir = v.team === 2 ? -1 : 1; // dir: vers l'arriere
+      var dep = Math.abs(v.y - f), opts = [];
+      for (var d = 3; d > dep; d--) {
+        var y = f + dir * d;
+        for (var x = 0; x < COLS; x++) {
+          if (free(S, x, y) && Math.abs(x - v.x) + Math.abs(y - v.y) >= 2) opts.push({ x: x, y: y, d: d });
+        }
+      }
+      if (!opts.length) continue;
+      opts.sort(function (a, b) { return b.d - a.d || Math.abs(a.x - v.x) - Math.abs(b.x - v.x) || a.x - b.x; });
+      return (function (v, dest, vx, vy) {
+        return {
+          valid: function () { return v.alive && v.x === vx && v.y === vy && free(S, dest.x, dest.y); },
+          run: function () {
+            S.ev.push({ t: 'skill', a: u.id, k: 'shadow', name: "Pas de l'ombre" });
+            tele(S, v, dest.x, dest.y);
+            addStatus(S, v, 'blind', 1);
+          }
+        };
+      })(v, opts[0], v.x, v.y);
+    }
+    return false;
+  },
+  nade: function (S, u) {
+    var F = foes(S, u), cand = F.filter(function (v) { return dist(u, v) <= 6; });
+    if (!cand.length) return false;
+    var best = null, bn = -1, bh = -1;
+    cand.forEach(function (c) {
+      var hit = F.filter(function (v) { return dist(c, v) <= 1; });
+      var n = hit.filter(function (v) { return !v.summon; }).length;
+      var hp = hit.reduce(function (s, v) { return s + v.hp; }, 0);
+      if (n > bn || (n === bn && hp > bh) || (n === bn && hp === bh && best && cmpPos(c, best) < 0)) { best = c; bn = n; bh = hp; }
+    });
+    if (bn < 1) return false;
+    var hit = F.filter(function (v) { return dist(best, v) <= 1; });
+    S.ev.push({ t: 'skill', a: u.id, k: 'nade', name: 'Grenade', cells: plus(best, 1) });
+    hit.forEach(function (v) { q(S, u, v, 18, 'aoe'); });
+    return true;
+  },
+  flash: function (S, u) {
+    var c = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 5; })
+      .sort(function (a, b) { return b.atk - a.atk || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+    if (!c.length) return false;
+    var t = c[0];
+    var hit = foes(S, u).filter(function (v) { return dist(t, v) <= 1; });
+    S.ev.push({ t: 'skill', a: u.id, k: 'flash', name: 'Flash', cells: plus(t, 1) });
+    hit.forEach(function (v) { addStatus(S, v, 'blind', 1); });
+    return true;
+  },
+  drone: function (S, u) {
+    var c = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 10; })
+      .sort(cmpNear(u)).slice(0, 2);
+    if (!c.length) return false;
+    S.ev.push({ t: 'skill', a: u.id, k: 'drone', name: 'Drone', targets: c.map(function (v) { return v.id; }) });
+    c.forEach(function (v) { addStatus(S, v, 'mark', 4); });
+    return true;
+  },
+  dart: function (S, u) {
+    var c = foes(S, u).filter(function (v) { return dist(u, v) <= 9; });
+    if (!c.length) return false;
+    var ns = c.filter(function (v) { return !v.summon; });
+    if (ns.length) c = ns;
+    c.sort(function (a, b) { return a.hp - b.hp || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+    S.ev.push({ t: 'skill', a: u.id, k: 'dart', name: 'Flèche choc' });
+    q(S, u, c[0], 15, 'skill');
+    return true;
+  },
+  barrier: function (S, u) {
+    var A = allies(S, u).filter(function (v) { return dist(u, v) <= 2; });
+    S.ev.push({ t: 'skill', a: u.id, k: 'barrier', name: 'Barrière', targets: A.map(function (v) { return v.id; }) });
+    A.forEach(function (v) { v.sh += 14; S.ev.push({ t: 'shield', b: v.id, v: 14 }); });
+    return true;
+  },
+  heal: function (S, u) {
+    var A = allies(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 4 && v.hp < v.mhp * 0.9; })
+      .sort(function (a, b) { return a.hp / a.mhp - b.hp / b.mhp || cmpPos(a, b); });
+    if (!A.length) return false;
+    var t = A[0];
+    S.ev.push({ t: 'skill', a: u.id, k: 'heal', name: 'Soin' });
+    S.heals.push({ src: u, dst: t, v: 20 });
+    return true;
+  },
+  cloud: function (S, u) {
+    var F = foes(S, u).filter(function (v) { return dist(u, v) <= 8; });
+    if (!F.length) return false;
+    var col = F.filter(function (v) { return v.x === u.x; }).sort(cmpNear(u));
+    var t = col.length ? col[0] : F.sort(cmpNear(u))[0];
+    var cells = plus(t, 1);
+    S.zones.push({ cells: cells, team: u.team, until: S.tick + 5, dmg: 5, owner: u.id });
+    S.ev.push({ t: 'skill', a: u.id, k: 'cloud', name: 'Nuage toxique', cells: cells });
+    return true;
+  },
+  turret: function (S, u) {
+    if (S.units.some(function (v) { return v.alive && v.owner === u.id && v.agent === 'turret'; })) return false;
+    var F = foes(S, u);
+    function near(c) { var m = 99; F.forEach(function (v) { m = Math.min(m, Math.abs(v.x - c[0]) + Math.abs(v.y - c[1])); }); return m; }
+    var cells = NB.map(function (n) { return [u.x + n[0], u.y + n[1]]; }).filter(function (c) { return free(S, c[0], c[1]); });
+    if (!cells.length) return false;
+    cells.sort(function (a, b) { return near(a) - near(b) || a[0] - b[0] || Math.abs(a[1] - MID) - Math.abs(b[1] - MID); });
+    var t = makeUnit(S, TURRET, u.team, cells[0][0], cells[0][1], { summon: true, owner: u.id });
+    S.ev.push({ t: 'skill', a: u.id, k: 'turret', name: 'Tourelle' });
+    S.ev.push({ t: 'summon', id: t.id });
+    return true;
+  },
+  quake: function (S, u) {
+    var F = foes(S, u).filter(function (v) { return dist(u, v) <= 6; }).sort(cmpNear(u));
+    if (!F.length) return false;
+    var t = F[0], hit = foes(S, u).filter(function (v) { return dist(t, v) <= 1; });
+    S.ev.push({ t: 'skill', a: u.id, k: 'quake', name: 'Onde de choc', cells: plus(t, 1) });
+    hit.forEach(function (v) { q(S, u, v, 10, 'skill'); addStatus(S, v, 'root', 2); });
+    return true;
+  },
+  stim: function (S, u) {
+    var A = allies(S, u).filter(function (v) { return dist(u, v) <= 2; });
+    S.ev.push({ t: 'skill', a: u.id, k: 'stim', name: 'Stimulant', targets: A.map(function (v) { return v.id; }) });
+    A.forEach(function (v) { addStatus(S, v, 'buff', 5); });
+    return true;
+  },
+  behind: function (S, u) {
+    var cands = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 8 && dist(u, v) > u.rng; })
+      .sort(function (a, b) { return b.atk - a.atk || a.hp - b.hp || cmpPos(a, b); });
+    var burst = Math.round(u.atk * 1.5);
+    for (var i = 0; i < cands.length; i++) {
+      var v = cands[i];
+      var cells = NB.map(function (n) { return [v.x + n[0], v.y + n[1]]; })
+        .filter(function (c) { return free(S, c[0], c[1]); });
+      if (!cells.length) continue;
+      cells.sort(function (a, b) {
+        return (Math.abs(b[0] - u.x) + Math.abs(b[1] - u.y)) - (Math.abs(a[0] - u.x) + Math.abs(a[1] - u.y)) ||
+          Math.abs(a[1] - MID) - Math.abs(b[1] - MID) || a[0] - b[0];
+      });
+      return (function (v, cell, vx, vy) {
+        return {
+          valid: function () { return v.alive && v.x === vx && v.y === vy && free(S, cell[0], cell[1]); },
+          run: function () {
+            S.ev.push({ t: 'skill', a: u.id, k: 'behind', name: 'Porte dérobée' });
+            tele(S, u, cell[0], cell[1]);
+            q(S, u, v, burst, 'skill');
+          }
+        };
+      })(v, cells[0], v.x, v.y);
+    }
+    return false;
+  },
+  knife: function (S, u) {
+    var c = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 7; })
+      .sort(function (a, b) { return b.atk - a.atk || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+    if (!c.length) return false;
+    S.ev.push({ t: 'skill', a: u.id, k: 'knife', name: 'Couteau suppresseur' });
+    q(S, u, c[0], 12, 'skill');
+    addStatus(S, c[0], 'sil', 2);
+    return true;
+  },
+  snipe: function (S, u) {
+    var c = foes(S, u).filter(function (v) { return !v.summon && dist(u, v) <= 8; })
+      .sort(function (a, b) { return b.hp - a.hp || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+    if (!c.length) return false;
+    S.ev.push({ t: 'skill', a: u.id, k: 'snipe', name: "Tireur d'élite" });
+    q(S, u, c[0], 20, 'skill');
+    return true;
+  },
+  traps: function (S, u) {
+    var made = [];
+    for (var x = u.x - 1; x <= u.x + 1; x++) {
+      if (x < 0 || x >= COLS) continue;
+      S.traps.push({ x: x, y: MID, team: u.team, used: false, owner: u.id });
+      made.push([x, MID]);
+    }
+    S.ev.push({ t: 'skill', a: u.id, k: 'traps', name: 'Fils-pièges', cells: made });
+    return true;
+  }
+};
+
+/* ---------- ultimes du capitaine ---------- */
+function ultCells(agent, team, t) {
+  var def = ULTS[agent], foe = 3 - team, cells = [], x, y;
+  if (!def || !t) return cells;
+  if (def.type === 'row') { for (x = 0; x < COLS; x++) cells.push([x, t.y]); }
+  else if (def.type === 'col') { for (y = HALF[foe][0]; y <= HALF[foe][1]; y++) cells.push([t.x, y]); }
+  else if (def.type === 'cell') {
+    var r = agent === 'killjoy' ? 2 : 1;
+    for (x = -r; x <= r; x++) for (y = -r; y <= r; y++) {
+      var cx = t.x + x, cy = t.y + y;
+      if (Math.abs(x) + Math.abs(y) <= r && inb(cx, cy)) cells.push([cx, cy]);
+    }
+  } else if (def.type === 'ally') cells.push([t.x, t.y]);
+  else if (agent === 'viper') {
+    for (y = HALF[foe][0]; y <= HALF[foe][1]; y++) for (x = 0; x < COLS; x++) cells.push([x, y]);
+    for (x = 0; x < COLS; x++) cells.push([x, MID]);
+  }
+  return cells;
+}
+function ultUsable(agent, rosterLen) { var d = ULTS[agent]; return !!d && (d.type !== 'ally' || rosterLen > 1); }
+function inCells(v, cells) { return cells.some(function (c) { return c[0] === v.x && c[1] === v.y; }); }
+var ULTFN = {
+  jett: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { q(S, u, v, 30, 'ult'); }); },
+  raze: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { q(S, u, v, 30, 'ult'); }); },
+  reyna: function (S, u) { u.atk = Math.round(u.atk * 1.35); u.ls = 0.3; },
+  phoenix: function (S, u, cells) { S.zones.push({ cells: cells, team: u.team, until: 5, dmg: 8, owner: u.id, weak: false }); },
+  sova: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { q(S, u, v, 24, 'ult'); addStatus(S, v, 'mark', 4); }); },
+  omen: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { addStatus(S, v, 'blind', 4); }); },
+  viper: function (S, u, cells) { S.zones.push({ cells: cells, team: u.team, until: 6, dmg: 3, owner: u.id, weak: false }); },
+  sage: function (S, u, cells) {
+    var v = S.units.filter(function (x) { return x.alive && x.team === u.team && x.id !== u.id && inCells(x, cells); })[0];
+    if (v) v.res = true;
+  },
+  killjoy: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { addStatus(S, v, 'blind', 2); addStatus(S, v, 'root', 3); }); },
+  cypher: function (S, u) { foes(S, u).forEach(function (v) { addStatus(S, v, 'mark', 5); }); },
+  breach: function (S, u, cells) { foesIn(S, u, cells).forEach(function (v) { q(S, u, v, 14, 'ult'); addStatus(S, v, 'blind', 2); addStatus(S, v, 'root', 2); }); },
+  brimstone: function (S, u, cells) { S.zones.push({ cells: cells, team: u.team, until: 4, dmg: 9, owner: u.id, weak: false }); },
+  yoru: function (S, u) { addStatus(S, u, 'hid', 5); },
+  kayo: function (S, u) { foes(S, u).forEach(function (v) { addStatus(S, v, 'sil', 5); }); },
+  chamber: function (S, u, cells, t) {
+    foesIn(S, u, cells).forEach(function (v) { q(S, u, v, (v.x === t.x && v.y === t.y) ? 55 : 20, 'ult'); });
+  }
+};
+function foesIn(S, u, cells) { return S.units.filter(function (v) { return v.alive && v.team !== u.team && inCells(v, cells); }); }
+function castUlt(S, team) {
+  var cap = S.units.filter(function (u) { return u.team === team && u.cap && u.alive; })[0], spec = S.ult[team];
+  if (!cap || !spec) return;
+  var def = ULTS[cap.agent], cells = ultCells(cap.agent, team, spec);
+  if (def.type !== 'none' && def.type !== 'ally' && !cells.length) return;
+  S.ev.push({ t: 'ult', a: cap.id, team: team, name: def.name, cells: cells });
+  ULTFN[cap.agent](S, cap, cells, spec);
+}
+
+/* ---------- ciblage / mouvement ---------- */
+function pickAttack(S, u) {
+  var c = foes(S, u).filter(function (v) { return dist(u, v) <= u.rng; });
+  if (!c.length) return null;
+  if (u.tgt === 'weak') {
+    var ns = c.filter(function (v) { return !v.summon; });
+    if (ns.length) c = ns;
+    c.sort(function (a, b) { return a.hp - b.hp || dist(u, a) - dist(u, b) || cmpPos(a, b); });
+  } else c.sort(cmpNear(u));
+  return c[0];
+}
+
+function moveUnit(S, u) {
+  var from = [u.x, u.y];
+  for (var s = 0; s < u.spd; s++) {
+    var F = foes(S, u);
+    if (!F.length) break;
+    var t = F.sort(cmpNear(u))[0];
+    var d0 = dist(u, t);
+    if (d0 <= u.rng) break;
+    var dx = t.x - u.x, dy = t.y - u.y, opts = [];
+    NB.forEach(function (n) {
+      var nx = u.x + n[0], ny = u.y + n[1];
+      if (!free(S, nx, ny)) return;
+      var nd = Math.abs(t.x - nx) + Math.abs(t.y - ny);
+      if (nd < d0) opts.push({ x: nx, y: ny, vert: n[1] !== 0 });
+    });
+    if (!opts.length) break;
+    var preferV = Math.abs(dy) >= Math.abs(dx);
+    opts.sort(function (a, b) { return (a.vert === preferV ? 0 : 1) - (b.vert === preferV ? 0 : 1); });
+    u.x = opts[0].x; u.y = opts[0].y;
+  }
+  if (u.x !== from[0] || u.y !== from[1]) S.ev.push({ t: 'move', id: u.id, from: from, to: [u.x, u.y] });
+}
+
+/* ---------- tick ---------- */
+function runTick(S, opening) {
+  S.ev = [];
+  var first = (S.tick % 2 === 0) ? S.first : 3 - S.first;
+  var order = S.units.filter(function (u) { return u.alive; })
+    .sort(function (a, b) { return ((a.team === first) ? 0 : 1) - ((b.team === first) ? 0 : 1) || a.id - b.id; });
+  var i;
+
+  if (opening) {
+    castUlt(S, first); castUlt(S, 3 - first);
+    runMobility(S, order, true);
+    order.forEach(function (u) {
+      var def = BYID[u.agent];
+      def.skills.forEach(function (sk, k) {
+        if (u.alive && sk.open && !sk.mob && u.cds[k] === 0 && SK[sk.key](S, u)) u.cds[k] = sk.cd;
+      });
+    });
+    flush(S);
+    S.units.forEach(function (u) { for (var s in u.st) if (u.st[s] > 0) u.st[s]--; });
+    return;
+  }
+
+  var acted = {}, intents = [];
+  // 1. mobilite (planifiee sur le meme etat pour tous, puis executee)
+  runMobility(S, order, false, acted);
+  // 2. actions
+  order.forEach(function (u) {
+    if (acted[u.id]) return;
+    var def = BYID[u.agent];
+    if (u.st.blind > 0) {
+      if (!pickAttack(S, u) && u.spd > 0 && u.st.root <= 0) intents.push(u);
+      return;
+    }
+    for (var k = 0; k < def.skills.length && !(u.st.sil > 0); k++) {
+      var sk = def.skills[k];
+      if (sk.mob || u.cds[k] > 0) continue;
+      if (SK[sk.key](S, u)) { u.cds[k] = sk.cd; return; }
+    }
+    var t = pickAttack(S, u);
+    if (t) { q(S, u, t, u.atk, 'atk'); return; }
+    if (u.spd > 0 && u.st.root <= 0) intents.push(u);
+  });
+  flush(S);
+  // 3. mouvements
+  intents.sort(function (a, b) {
+    return b.spd - a.spd || ((a.team === first) ? 0 : 1) - ((b.team === first) ? 0 : 1) || a.x - b.x || cmpPos(a, b);
+  });
+  intents.forEach(function (u) { if (u.alive) moveUnit(S, u); });
+  // 4. pieges et zones
+  S.traps.forEach(function (t) {
+    if (t.used) return;
+    var v = at(S, t.x, t.y);
+    if (v && v.team !== t.team) {
+      t.used = true;
+      var o = S.units.filter(function (x) { return x.id === t.owner && x.alive; })[0] || null;
+      q(S, o, v, 10, 'trap');
+      addStatus(S, v, 'root', 2);
+      addStatus(S, v, 'mark', 3);
+      S.ev.push({ t: 'trap', x: t.x, y: t.y, id: v.id });
+    }
+  });
+  S.zones.forEach(function (z) {
+    if (S.tick > z.until) return;
+    S.units.forEach(function (v) {
+      if (!v.alive || v.team === z.team) return;
+      if (z.cells.some(function (c) { return c[0] === v.x && c[1] === v.y; })) {
+        q(S, null, v, z.dmg, 'zone');
+        if (z.weak !== false) addStatus(S, v, 'weak', 1);
+      }
+    });
+  });
+  flush(S);
+  // 5. cooldowns et statuts
+  S.units.forEach(function (u) {
+    if (!u.alive) return;
+    for (var k = 0; k < u.cds.length; k++) if (u.cds[k] > 0) u.cds[k]--;
+    for (var s in u.st) if (u.st[s] > 0) u.st[s]--;
+  });
+}
+
+function runMobility(S, order, opening, acted) {
+  var plans = [];
+  order.forEach(function (u) {
+    if (!u.alive || u.st.blind > 0 || u.st.sil > 0) return;
+    var def = BYID[u.agent];
+    for (var k = 0; k < def.skills.length; k++) {
+      var sk = def.skills[k];
+      if (!sk.mob || u.cds[k] !== 0 || (opening && !sk.open)) continue;
+      var p = SK[sk.key](S, u);
+      if (p) { plans.push({ u: u, k: k, sk: sk, p: p }); break; }
+    }
+  });
+  plans.forEach(function (pl) {
+    if (!pl.u.alive) return;
+    var p = pl.p;
+    if (!p.valid()) { p = SK[pl.sk.key](S, pl.u); if (!p) return; }
+    p.run();
+    pl.u.cds[pl.k] = pl.sk.cd;
+    if (acted) acted[pl.u.id] = true;
+  });
+}
+
+function checkEnd(S, force) {
+  var a = { 1: [], 2: [] };
+  S.units.forEach(function (u) { if (u.alive && !u.summon) a[u.team].push(u); });
+  var w = null;
+  if (!a[1].length && !a[2].length) w = 0;
+  else if (!a[1].length) w = 2;
+  else if (!a[2].length) w = 1;
+  else if (force) {
+    var h1 = a[1].reduce(function (s, u) { return s + u.hp; }, 0), h2 = a[2].reduce(function (s, u) { return s + u.hp; }, 0);
+    w = h1 === h2 ? 0 : (h1 > h2 ? 1 : 2);
+  }
+  if (w === null) return null;
+  var surv = w ? a[w].map(function (u) { return u.id; }) : [];
+  return { winner: w, survivors: surv, dmg: surv.length, ticks: S.tick };
+}
+
+function simulate(setup) {
+  var S = { tick: 0, units: [], zones: [], traps: [], pend: [], heals: [], stq: [], ev: [], nid: 1, first: setup.first === 2 ? 2 : 1,
+    ult: setup.ult || {} };
+  var capOf = setup.cap || {};
+  [1, 2].forEach(function (team) {
+    setup[team].forEach(function (p) { makeUnit(S, BYID[p.agent], team, p.x, p.y, { cap: capOf[team] === p.agent }); });
+  });
+  var start = snap(S), frames = [];
+  runTick(S, true);
+  frames.push({ tick: 0, ev: S.ev, snap: snap(S) });
+  var res = checkEnd(S, false);
+  while (!res) {
+    S.tick++;
+    runTick(S, false);
+    frames.push({ tick: S.tick, ev: S.ev, snap: snap(S) });
+    res = checkEnd(S, S.tick >= MAXT);
+  }
+  return { start: start, frames: frames, result: res };
+}
+
+g.VT = { COLS: COLS, ROWS: ROWS, MID: MID, HALF: HALF, FRONT: FRONT, AGENTS: AGENTS, BYID: BYID, ULTS: ULTS, simulate: simulate, ENRAGE: ENRAGE, ultCells: ultCells, ultUsable: ultUsable };
+if (typeof module !== 'undefined' && module.exports) module.exports = g.VT;
+})(typeof window !== 'undefined' ? window : globalThis);
+
+</script>
+<script>
+/* Valo Tactic - interface et jeu en ligne (2 telephones, Supabase Realtime en simple canal de messages) */
+(function () {
+'use strict';
+var VT = window.VT, AG = VT.AGENTS, BY = VT.BYID;
+var SB_URL = 'https://bioniksdhwadqipeagoq.supabase.co';
+var SB_KEY = 'sb_publishable_kmCrzTmtesoYLa0pc0R7cQ_GcNhfDp6';
+var STORE = 'vt-sess-v1';
+
+function $(s) { return document.querySelector(s); }
+function $$(s) { return Array.prototype.slice.call(document.querySelectorAll(s)); }
+function h(tag, cls, html) { var e = document.createElement(tag); if (cls) e.className = cls; if (html != null) e.innerHTML = html; return e; }
+function wait(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+/* ---------- emblemes originaux (SVG minimalistes) ---------- */
+var EMB = {
+  jett: '<path d="M17.7 7.7a2.5 2.5 0 1 1 1.8 4.3H2"/><path d="M9.6 4.6A2 2 0 1 1 11 8H2"/><path d="M12.6 19.4A2 2 0 1 0 14 16H2"/>',
+  raze: '<path fill="currentColor" d="M12 2l2.2 6.3L21 7l-4.3 5 4.3 5-6.8-1.3L12 22l-2.2-6.3L3 17l4.3-5L3 7l6.8 1.3z"/>',
+  reyna: '<path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12z"/><circle cx="12" cy="12" r="3" fill="currentColor"/>',
+  phoenix: '<path d="M12 2.5c.6 3.6 5.5 5.6 5.5 10.8a5.5 5.5 0 0 1-11 0c0-2.4 1.4-3.9 2.5-5.3.2 1.6 1.2 2.6 2.4 2.4 1.2-1.7.8-4.7.6-7.9z"/>',
+  sova: '<circle cx="12" cy="12" r="6.5"/><path d="M12 2v6M12 16v6M2 12h6M16 12h6"/>',
+  omen: '<path fill="currentColor" d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/>',
+  viper: '<path d="M12 3s6 6.5 6 11a6 6 0 0 1-12 0c0-4.5 6-11 6-11z"/><path d="M9.5 14.5a2.5 2.5 0 0 0 2.5 2.5"/>',
+  sage: '<path fill="currentColor" d="M10 3h4v7h7v4h-7v7h-4v-7H3v-4h7z"/>',
+  killjoy: '<path d="M12 2l8.5 5v10L12 22 3.5 17V7z"/><circle cx="12" cy="12" r="3" fill="currentColor"/>',
+  cypher: '<rect x="2.5" y="7" width="13" height="10" rx="1.5"/><path d="M15.5 10.5l6-3.5v10l-6-3.5z"/>',
+  breach: '<path d="M4 9a9 9 0 0 1 16 0M7 13a5.5 5.5 0 0 1 10 0"/><circle cx="12" cy="18" r="1.8" fill="currentColor"/>',
+  brimstone: '<circle cx="12" cy="15" r="5.5"/><path d="M12 2v7M9 6l3 3 3-3"/>',
+  yoru: '<path d="M12 3c4 0 7 3 7 7v11l-3.5-2.5L12 21l-3.5-2.5L5 21V10c0-4 3-7 7-7z"/><circle cx="9.5" cy="10" r="1.2" fill="currentColor"/><circle cx="14.5" cy="10" r="1.2" fill="currentColor"/>',
+  kayo: '<rect x="5" y="5" width="14" height="14" rx="2"/><path d="M9 9l6 6M15 9l-6 6"/>',
+  chamber: '<path d="M2 10h15l3 2-3 2H9l-1 5H5l1-5H2z"/>',
+  turret: '<path d="M5 20h14M8 20v-6h8v6M7 14l1-5h8l1 5M12 9V4"/>'
+};
+function emblem(id) { return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + EMB[id] + '</svg>'; }
+function tok(id, team, cls, cap) { return '<div class="tok t' + (team || 0) + (cls ? ' ' + cls : '') + '">' + (cap ? '<b class="cp">★</b>' : '') + emblem(id) + '<i>' + (id === 'turret' ? 'TOUR.' : BY[id].name.toUpperCase()) + '</i></div>'; }
+
+/* ---------- etat reseau (journal partage) et etat d'interface ---------- */
+/* Le journal N.log contient toutes les decisions : p<n> picks, b<manche>_<equipe> placements+ultime, n<manche>_<equipe> "suivant".
+   Chaque telephone en deduit tout le reste (phase, PV, combat) avec le moteur deterministe. */
+var N = { code: null, role: 0, gen: 1, log: {}, inGame: false, client: null, ch: null, status: 'off', peer: false, connAt: 0, checking: false, err: '', ct: 0 };
+var G = { r: 1, ph: null, pk: null, roster: { 1: [], 2: [] }, pick: null, shown: {}, hurt: {}, speed: 1, sim: null, simR: 0, token: 0, skipping: false, utgt: null, hasLast: false, flip: false };
+var PL = {}, SEL = null;
+var app = $('#app');
+var cur = 'intro';
+
+function cnt() { return Object.keys(N.log).length; }
+function persist() {
+  try { localStorage.setItem(STORE, JSON.stringify({ code: N.code, role: N.role, gen: N.gen, log: N.log, inGame: N.inGame })); } catch (e) {}
+}
+function unpersist() { try { localStorage.removeItem(STORE); } catch (e) {} }
+function stored() { try { return JSON.parse(localStorage.getItem(STORE) || 'null'); } catch (e) { return null; } }
+
+/* ---------- deduction de l'etat depuis le journal ---------- */
+function drafterOf(n) { var r = Math.floor(n / 2) + 1, i = n % 2; return (r % 2 === 1 ? [1, 2] : [2, 1])[i]; }
+function rosters(maxPicks) {
+  var R = { 1: [], 2: [] };
+  for (var n = 0; n < maxPicks; n++) { var e = N.log['p' + n]; if (!e) break; R[drafterOf(n)].push(e.a); }
+  return R;
+}
+function owner(id) { var R = rosters(10); return R[1].indexOf(id) >= 0 ? 1 : R[2].indexOf(id) >= 0 ? 2 : 0; }
+function roundSetup(r) {
+  var m = Math.min(r, 5), R = rosters(m * 2);
+  if (R[1].length < m || R[2].length < m) return null;
+  var b1 = N.log['b' + r + '_1'], b2 = N.log['b' + r + '_2'];
+  if (!b1 || !b2) return null;
+  var s = { 1: [], 2: [], first: r % 2 === 1 ? 1 : 2, cap: { 1: R[1][0], 2: R[2][0] }, ult: { 1: b1.ult || {}, 2: b2.ult || {} } };
+  [[1, b1], [2, b2]].forEach(function (p) {
+    Object.keys(p[1].cells).sort(function (a, b) { var A = a.split(','), B = b.split(','); return (A[1] - B[1]) || (A[0] - B[0]); })
+      .forEach(function (k) { var c = k.split(','); s[p[0]].push({ agent: p[1].cells[k], x: +c[0], y: +c[1] }); });
+  });
+  return s;
+}
+var SIMC = {};
+function simOf(r) {
+  var s = roundSetup(r); if (!s) return null;
+  var key = JSON.stringify(s), c = SIMC[r];
+  if (c && c.key === key) return c.sim;
+  var sim = VT.simulate(s); SIMC[r] = { key: key, sim: sim };
+  return sim;
+}
+function hpAfter(r) {
+  var hp = { 1: 10, 2: 10 };
+  for (var i = 1; i <= r; i++) {
+    var sm = simOf(i); if (!sm) break;
+    var w = sm.result.winner;
+    if (w) hp[3 - w] = Math.max(0, hp[3 - w] - sm.result.dmg);
+  }
+  return hp;
+}
+function phase() {
+  if (!N.inGame) return { k: 'lobby', r: 1 };
+  var r = 1;
+  while (true) {
+    if (r <= 5) {
+      var n0 = 2 * (r - 1);
+      if (!N.log['p' + n0]) return { k: 'draft', r: r, i: 0 };
+      if (!N.log['p' + (n0 + 1)]) return { k: 'draft', r: r, i: 1 };
+    }
+    if (!N.log['b' + r + '_' + N.role]) return { k: 'build', r: r };
+    if (!N.log['b' + r + '_' + (3 - N.role)]) return { k: 'wait', r: r };
+    var hp = hpAfter(r), over = hp[1] <= 0 || hp[2] <= 0;
+    if (over || !(N.log['n' + r + '_1'] && N.log['n' + r + '_2'])) return { k: G.shown[r] ? 'result' : 'battle', r: r, over: over };
+    r++;
+  }
+}
+function pkOf(ph) { return ph.k + ':' + ph.r + (ph.k === 'draft' ? ':' + ph.i : '') + (ph.k === 'lobby' && N.err ? ':e' : ''); }
+
+/* ---------- reseau ---------- */
+function send(p) {
+  if (!N.ch || N.status !== 'SUBSCRIBED') return;
+  p.gen = N.gen;
+  try { N.ch.send({ type: 'broadcast', event: 'vt', payload: p }); } catch (e) {}
+}
+function sendSync() { send({ type: 'sync', log: N.log }); }
+function hello() { send({ type: 'hello', n: cnt() }); }
+function act(key, entry) {
+  entry.g = N.gen; N.log[key] = entry; persist();
+  send({ type: 'act', key: key, entry: entry });
+  refresh();
+}
+function resetLocal(gen) {
+  N.gen = gen; N.log = {}; SIMC = {}; G.shown = {}; G.hurt = {}; G.pick = null; PL = {}; SEL = null; G.token++;
+  persist();
+}
+function newGame() {
+  resetLocal(N.gen + 1);
+  send({ type: 'new' });
+  refresh();
+}
+function onMsg(p) {
+  if (!p) return;
+  if (p.gen > N.gen) resetLocal(p.gen);
+  if (p.gen < N.gen) { if (p.type === 'hello') sendSync(); return; }
+  if (p.type === 'act') { N.log[p.key] = p.entry; }
+  else if (p.type === 'sync') { for (var k in p.log) N.log[k] = p.log[k]; }
+  else if (p.type === 'hello') { if (cnt() !== p.n) sendSync(); }
+  persist(); refresh();
+}
+function track() { try { N.ch.track({ role: N.role }); } catch (e) {} }
+function onSubscribed() {
+  if (N.role === 2 && !N.inGame) {
+    N.checking = true; clearTimeout(N.ct);
+    N.ct = setTimeout(function () { if (N.checking) { N.checking = false; lobbyFail('Partie introuvable. Vérifie le code.'); } }, 7000);
+  } else { track(); hello(); }
+}
+function onPresence() {
+  if (!N.ch) return;
+  var ks = Object.keys(N.ch.presenceState());
+  N.peer = ks.indexOf(String(3 - N.role)) >= 0;
+  if (N.checking) {
+    if (ks.indexOf('1') >= 0) {
+      N.checking = false; clearTimeout(N.ct);
+      if (ks.indexOf('2') >= 0) { lobbyFail('Cette partie est déjà complète.'); return; }
+      N.inGame = true; persist(); track(); hello();
+    }
+  } else if (N.role === 1 && !N.inGame && N.peer) { N.inGame = true; persist(); hello(); }
+  refresh();
+}
+function lobbyFail(msg) { disconnect(); unpersist(); N.err = msg; N.inGame = false; refresh(); }
+function disconnect() {
+  if (N.ch) { var c = N.ch; N.ch = null; try { N.client.removeChannel(c); } catch (e) {} }
+  N.status = 'off';
+}
+function connect() {
+  disconnect();
+  if (!window.supabase) { N.err = 'Impossible de charger la connexion en ligne. Vérifie ton réseau.'; refresh(); return; }
+  if (!N.client) N.client = window.supabase.createClient(SB_URL, SB_KEY, { realtime: { params: { eventsPerSecond: 10 } } });
+  var ch = N.client.channel('vt-' + N.code, { config: { broadcast: { self: false, ack: false }, presence: { key: String(N.role) } } });
+  N.ch = ch; N.status = 'joining'; N.connAt = Date.now();
+  ch.on('broadcast', { event: 'vt' }, function (m) { if (ch === N.ch) onMsg(m.payload); });
+  ch.on('presence', { event: 'sync' }, function () { if (ch === N.ch) onPresence(); });
+  ch.subscribe(function (st) {
+    if (ch !== N.ch) return;
+    N.status = st;
+    if (st === 'SUBSCRIBED') onSubscribed();
+    else if (st === 'CHANNEL_ERROR' || st === 'TIMED_OUT' || st === 'CLOSED') N.peer = false;
+    updateNet();
+  });
+}
+setInterval(function () {
+  if (!N.code) return;
+  if (N.ch && N.status === 'SUBSCRIBED') hello();
+  else if (Date.now() - N.connAt > 9000 && !N.err) connect();
+  updateNet();
+}, 4000);
+document.addEventListener('visibilitychange', function () { if (!document.hidden && N.code && !N.err) connect(); });
+window.addEventListener('online', function () { if (N.code && !N.err) connect(); });
+
+/* ---------- barre de statut ---------- */
+function updateNet() {
+  if (!N.code) return;
+  var ph = G.ph || {}, up = N.status === 'SUBSCRIBED', st = '';
+  var dot = $('#net i'); dot.className = !up ? 'bad' : (N.peer ? 'ok' : 'wn');
+  $('#net .nm').textContent = 'Partie ' + N.code;
+  if (!up) st = 'Reconnexion…';
+  else if (!N.peer) st = 'Ami hors ligne';
+  else if (ph.k === 'draft') { var t = drafterOf(2 * (ph.r - 1) + ph.i); st = t === N.role ? 'À toi de choisir' : 'J' + t + ' choisit'; }
+  else if (ph.k === 'build' || ph.k === 'wait') st = N.log['b' + ph.r + '_' + (3 - N.role)] ? 'Ami : prêt ✓' : 'Ami : place ses agents';
+  else if (ph.k === 'result') st = N.log['n' + ph.r + '_' + (3 - N.role)] ? 'Ami : prêt ✓' : 'Ami : regarde le résultat';
+  else if (ph.k === 'battle') st = 'Combat';
+  $('#net .st').textContent = st;
+}
+
+/* ---------- ecrans ---------- */
+function fit() {
+  var W = Math.min(window.innerWidth, 480) - 32, H = window.innerHeight;
+  var p = Math.max(44, Math.min(76, W / 5, (H - (H < 720 ? 500 : 450)) / 4));
+  var b = Math.max(38, Math.min(76, W / 5, (H - 252) / 9));
+  var u = Math.max(34, Math.min(70, W / 5, (H - 338) / 9));
+  app.style.setProperty('--cellp', p + 'px');
+  app.style.setProperty('--cellb', b + 'px');
+  app.style.setProperty('--cellu', u + 'px');
+}
+window.addEventListener('resize', function () { fit(); if (cur === 'place') renderPlace(); });
+function go(name) {
+  cur = name;
+  $$('.scr').forEach(function (s) { s.classList.toggle('on', s.id === 's-' + name); });
+  var hud = name === 'place' || name === 'battle' || name === 'ult';
+  $('#hud').hidden = !hud; $('#steps').hidden = !hud;
+  $('#net').hidden = !(hud || name === 'draft');
+  fit();
+}
+function setStep(i) { $$('#steps i').forEach(function (e, k) { e.classList.toggle('on', k === i); e.classList.toggle('done', k < i); }); }
+function tcol(team) { return team === 1 ? 'var(--t1)' : 'var(--t2)'; }
+
+function renderHUD(r, hp, hurt) {
+  [1, 2].forEach(function (t) {
+    $('#hp' + t).textContent = hp[t];
+    var p = $('#pips' + t); p.innerHTML = '';
+    for (var i = 0; i < 10; i++) p.appendChild(h('i', i < hp[t] ? '' : 'off'));
+    $('#pl' + t + ' .pn').textContent = 'JOUEUR ' + t + (N.role === t ? ' · TOI' : '');
+  });
+  $('#rnd').textContent = r;
+  if (hurt) { var el = $('#pl' + hurt); el.classList.remove('hurt'); void el.offsetWidth; el.classList.add('hurt'); }
+}
+function curtain(o, cb) {
+  $('#curtain').style.setProperty('--tc', o.team === 2 ? 'var(--t2)' : o.team === 1 ? 'var(--t1)' : 'var(--fg)');
+  $('#cu-k').textContent = o.k; $('#cu-t').innerHTML = o.t; $('#cu-p').textContent = o.p || '';
+  var b = $('#cu-b'); b.hidden = !o.b; b.textContent = o.b || ''; b.className = 'btn primary' + (o.team ? ' p' + o.team : '');
+  $('#curtain').hidden = false;
+  b.onclick = function () { $('#curtain').hidden = true; if (cb) cb(); };
+}
+function banner(txt) {
+  var b = $('#banner'); $('#bantxt').textContent = txt; b.classList.remove('on'); void b.offsetWidth; b.classList.add('on');
+  return wait(1000).then(function () { b.classList.remove('on'); });
+}
+
+/* ---------- accueil ---------- */
+(function () {
+  var d = $('#demo'), top = ['sova', 'cypher', 'omen', 'viper', 'raze'], bot = ['jett', 'sage', 'reyna', 'killjoy', 'phoenix'];
+  top.forEach(function (a) { var t = h('div', '', tok(a, 2)); t.style.opacity = .9; d.appendChild(t); });
+  d.appendChild(h('hr'));
+  bot.forEach(function (a) { d.appendChild(h('div', '', tok(a, 1))); });
+})();
+$('#i-rules').onclick = function () { $('#rules').hidden = false; };
+$('#ru-ok').onclick = function () { $('#rules').hidden = true; };
+$('#cu-r').onclick = function () { $('#rules').hidden = false; };
+$('#i-code').oninput = function () { this.value = this.value.toUpperCase().replace(/[^A-Z]/g, '').slice(0, 4); $('#i-err').textContent = ''; };
+
+function newCode() {
+  var L = 'ABCDEFGHJKLMNPQRSTUVWXYZ', c = '';
+  for (var i = 0; i < 4; i++) c += L.charAt(Math.floor(Math.random() * L.length));
+  return c;
+}
+function startSession(code, role) {
+  N.code = code; N.role = role; N.gen = 1; N.log = {}; N.inGame = false; N.peer = false; N.err = ''; N.checking = false;
+  SIMC = {}; G.shown = {}; G.hurt = {}; G.pk = null; G.pick = null;
+  persist(); connect(); refresh();
+}
+$('#i-host').onclick = function () { startSession(newCode(), 1); };
+$('#i-join').onclick = function () {
+  var c = $('#i-code').value.trim().toUpperCase();
+  if (c.length !== 4) { $('#i-err').textContent = 'Le code compte 4 lettres.'; return; }
+  startSession(c, 2);
+};
+$('#i-code').onkeydown = function (e) { if (e.key === 'Enter') $('#i-join').click(); };
+$('#i-resume').onclick = function () {
+  var s = stored(); if (!s) return;
+  N.code = s.code; N.role = s.role; N.gen = s.gen || 1; N.log = s.log || {}; N.inGame = !!s.inGame; N.peer = false; N.err = ''; SIMC = {};
+  G.pk = null; connect(); refresh();
+};
+function leave() {
+  disconnect(); unpersist(); clearTimeout(N.ct);
+  N.code = null; N.role = 0; N.log = {}; N.inGame = false; N.peer = false; N.err = ''; N.checking = false;
+  G.token++; G.pk = null; G.ph = null;
+  $('#curtain').hidden = true; $('#sheet').hidden = true;
+  showIntro();
+}
+$('#quit').onclick = function () { if (confirm('Quitter la partie en cours ?')) leave(); };
+$('#lb-back').onclick = leave;
+function showIntro() {
+  go('intro');
+  var s = stored(), b = $('#i-resume');
+  b.hidden = !s; if (s) b.textContent = 'Reprendre la partie ' + s.code;
+  var m = /[?&]c=([A-Za-z]{4})/.exec(location.search);
+  if (m && !$('#i-code').value) $('#i-code').value = m[1].toUpperCase();
+}
+
+/* ---------- lobby ---------- */
+function shareUrl() { return location.origin + location.pathname + '?c=' + N.code; }
+function renderLobby() {
+  go('lobby');
+  $('#lb-code').textContent = N.code;
+  var p = $('#lb-p'); p.className = N.err ? 'err' : '';
+  if (N.role === 1) {
+    $('#lb-k').textContent = 'Partie créée'; $('#lb-t').innerHTML = 'Invite <span class="t2c">ton ami</span>';
+    p.textContent = N.err || 'Envoie-lui le lien ou le code. La partie démarre dès qu’il rejoint.';
+  } else {
+    $('#lb-k').textContent = 'Connexion'; $('#lb-t').innerHTML = 'Rejoindre la partie';
+    p.textContent = N.err || 'Connexion à la partie de ton ami…';
+  }
+  $('#lb-share').hidden = N.role !== 1 || !!N.err;
+}
+$('#lb-share').onclick = function () {
+  var url = shareUrl(), msg = 'Rejoins ma partie de Valo Tactic : code ' + N.code;
+  if (navigator.share) { navigator.share({ title: 'Valo Tactic', text: msg, url: url }).catch(function () {}); return; }
+  var b = this;
+  function ok() { b.textContent = 'Lien copié ✓'; setTimeout(function () { b.textContent = 'Partager le lien'; }, 1800); }
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(url).then(ok, function () { prompt('Copie ce lien', url); });
+  else prompt('Copie ce lien', url);
+};
+
+/* ---------- fiche agent ---------- */
+function cardHTML(id) {
+  var a = BY[id], s = '<div class="chead"><b>' + a.name + '</b><span>' + a.role + '</span></div>' +
+    '<div class="stats"><i>PV<b>' + a.hp + '</b></i><i>ATQ<b>' + a.atk + '</b></i><i>PORTÉE<b>' + a.rng + '</b></i><i>VIT<b>' + a.spd + '</b></i></div>';
+  a.skills.forEach(function (k) { s += '<p><b>' + k.name + '.</b> ' + k.desc + '</p>'; });
+  if (a.passive) s += '<p><b>' + a.passive.name + '.</b> ' + a.passive.desc + '</p>';
+  s += '<p class="ul"><b>★ Ultime · ' + a.ult.name + '.</b> ' + a.ult.desc + '</p>';
+  s += '<p class="tip">' + a.tip + '</p>';
+  return s;
+}
+
+/* ---------- pilotage des phases ---------- */
+function refresh() {
+  if (!N.code) return;
+  var ph = phase(); G.ph = ph;
+  var pk = pkOf(ph);
+  if (pk !== G.pk) enter(ph); else soft(ph);
+  updateNet();
+}
+function enter(ph) {
+  G.pk = pkOf(ph); G.r = ph.r;
+  var inPlay = ph.k === 'battle' || ph.k === 'result';
+  if (!inPlay) G.token++;
+  $('#sheet').hidden = ph.k !== 'result';
+  if (ph.k !== 'wait') $('#curtain').hidden = true;
+  if (ph.k === 'lobby') renderLobby();
+  else if (ph.k === 'draft') { G.pick = null; go('draft'); renderDraft(); }
+  else if (ph.k === 'build') {
+    G.roster = rosters(Math.min(ph.r, 5) * 2); G.utgt = null; initPlacement();
+    go('place'); setStep(0); renderHUD(ph.r, hpAfter(ph.r - 1)); renderPlace(); banner('Manche ' + ph.r);
+  } else if (ph.k === 'wait') {
+    G.roster = rosters(Math.min(ph.r, 5) * 2);
+    var mine = N.log['b' + ph.r + '_' + N.role]; PL = JSON.parse(JSON.stringify(mine.cells || {})); SEL = null;
+    if (cur !== 'place' && cur !== 'ult') { go('place'); renderPlace(); }
+    setStep(1); renderHUD(ph.r, hpAfter(ph.r - 1));
+    curtain({ team: N.role, k: 'Manche ' + ph.r, t: 'Prêt !', p: 'En attente de ton ami. Le combat démarre dès qu’il a validé.' });
+  } else if (ph.k === 'battle') { G.sim = simOf(ph.r); G.simR = ph.r; renderHUD(ph.r, hpAfter(ph.r - 1)); setStep(2); go('battle'); playBattle(true); }
+  else if (ph.k === 'result') { showSheet(ph.r); }
+}
+function soft(ph) {
+  if (ph.k === 'lobby') renderLobby();
+  else if (ph.k === 'draft') renderDraft();
+  else if (ph.k === 'result') updNext(ph.r, ph.over);
+}
+
+/* ---------- draft : un agent a la fois, chacun son tour ---------- */
+function renderDraft() {
+  var ph = phase(); if (ph.k !== 'draft') return;
+  var n = 2 * (ph.r - 1) + ph.i, t = drafterOf(n), mine = t === N.role, R = rosters(10), hp = hpAfter(ph.r - 1);
+  $('#dk').textContent = 'Manche ' + ph.r + ' · choix ' + (ph.i + 1) + '/2 · J1 ' + hp[1] + ' PV · J2 ' + hp[2] + ' PV';
+  $('#dtitle').innerHTML = mine ? '<span class="t' + t + 'c">À toi</span> de choisir' :
+    '<span class="t' + t + 'c">Joueur ' + t + '</span> choisit…';
+  [1, 2].forEach(function (p) {
+    var r = $('#r' + p); r.innerHTML = '<b>J' + p + '</b>';
+    for (var i = 0; i < 5; i++) {
+      var id = R[p][i], s = h('div', 'slot' + (id ? '' : ' empty') + (!id && t === p && i === R[p].length ? ' now' : ''), id ? tok(id, p, '', i === 0) : '');
+      s.style.setProperty('--tc', tcol(p));
+      if (id) s.firstChild.style.setProperty('--ts', '38px');
+      r.appendChild(s);
+    }
+  });
+  var pool = $('#pool'); pool.innerHTML = '';
+  AG.forEach(function (a) {
+    var o = R[1].indexOf(a.id) >= 0 ? 1 : R[2].indexOf(a.id) >= 0 ? 2 : 0,
+      b = h('button', 'tile' + (o ? ' taken' : '') + (G.pick === a.id ? ' sel' : ''),
+        tok(a.id, o, '', o && R[o][0] === a.id) + '<span class="nm">' + a.name + '</span><span class="rl">' + a.role + '</span>' + (o ? '<span class="own t' + o + 'c">J' + o + '</span>' : ''));
+    b.onclick = function () { G.pick = a.id; renderDraft(); };
+    pool.appendChild(b);
+  });
+  var c = $('#dcard');
+  c.className = 'card c' + t;
+  c.innerHTML = G.pick ? cardHTML(G.pick) :
+    '<p class="hint">' + (mine ? (R[t].length === 0 ? '<b>★ Le premier agent est ton capitaine :</b> son ultime se lance au début de chaque manche. ' : 'Tes agents arrivent un par un : adapte-toi à ceux de ton ami. ') :
+      'Ton ami choisit. Profites-en pour étudier les agents restants. ') + 'Touche un agent pour voir ses compétences.</p>';
+  var pk = $('#dpick');
+  pk.className = 'btn primary p' + N.role;
+  pk.disabled = !(mine && G.pick);
+  pk.textContent = !mine ? 'J' + t + ' choisit…' : G.pick ? (R[t].length === 0 ? 'Capitaine ' : 'Choisir ') + BY[G.pick].name : 'Choisir';
+  $('#dauto').disabled = !mine; $('#dauto').style.opacity = mine ? '' : '.4';
+}
+function doPick(id) {
+  var ph = phase(); if (ph.k !== 'draft') return;
+  var n = 2 * (ph.r - 1) + ph.i;
+  if (drafterOf(n) !== N.role || owner(id)) return;
+  G.pick = null; act('p' + n, { a: id });
+}
+$('#dpick').onclick = function () { if (G.pick) doPick(G.pick); };
+$('#dauto').onclick = function () {
+  var free = AG.map(function (a) { return a.id; }).filter(function (id) { return !owner(id); });
+  if (free.length) doPick(free[Math.floor(Math.random() * free.length)]);
+};
+
+/* ---------- placement (chacun sur son telephone, en meme temps) ---------- */
+function cap(t) { return G.roster[t][0]; }
+function initPlacement() {
+  PL = {}; SEL = null;
+  var prev = N.log['b' + (G.r - 1) + '_' + N.role];
+  if (prev && prev.cells) for (var k in prev.cells) if (G.roster[N.role].indexOf(prev.cells[k]) >= 0) PL[k] = prev.cells[k];
+  G.hasLast = Object.keys(PL).length > 0;
+  var un = G.roster[N.role].filter(function (a) { return !placed(a); });
+  if (un.length) SEL = { from: 'tray', a: un[0] };
+}
+function placed(a) { for (var k in PL) if (PL[k] === a) return k; return null; }
+function renderPlace() {
+  var t = N.role, rows = t === 1 ? [5, 6, 7, 8] : [3, 2, 1, 0], front = t === 1 ? 5 : 3, total = G.roster[t].length;
+  $('#pwho').innerHTML = '<span class="t' + t + 'c">Joueur ' + t + '</span>';
+  $('#phint').innerHTML = G.hasLast ? 'Placement précédent repris.<br>Modifie-le ou valide.' : 'Touche un agent, puis une case.';
+  var b = $('#pboard'); b.innerHTML = ''; b.className = 'pboard' + t; b.style.setProperty('--tc', tcol(t));
+  b.appendChild(h('div', 'bar foe', 'Camp ennemi')); b.appendChild(h('div', 'bar neutral', 'Zone neutre · pièges et nuages'));
+  rows.forEach(function (y) {
+    var r = h('div', 'prow');
+    for (var x = 0; x < 5; x++) {
+      (function (x, y) {
+        var k = x + ',' + y, a = PL[k];
+        var c = h('button', 'pc' + (y === front ? ' front' : '') + (a && SEL && SEL.from === 'cell' && SEL.k === k ? ' sel' : '') + (!a && SEL ? ' can' : ''), a ? tok(a, t, '', a === cap(t)) : '');
+        c.setAttribute('aria-label', 'Case ' + (x + 1) + (a ? ' ' + BY[a].name : ' vide'));
+        c.onclick = function () { tapCell(x, y); };
+        r.appendChild(c);
+      })(x, y);
+    }
+    b.appendChild(r);
+  });
+  var tr = $('#tray'); tr.innerHTML = '';
+  G.roster[t].forEach(function (a) {
+    var k = placed(a), c = h('button', 'chip' + (k ? ' done' : '') + (SEL && SEL.a === a ? ' sel' : ''), tok(a, t, '', a === cap(t)) + '<span>' + BY[a].name + '</span>');
+    c.onclick = function () { tapChip(a); };
+    tr.appendChild(c);
+  });
+  var n = Object.keys(PL).length, card = $('#pcard');
+  card.className = 'card c' + t;
+  card.innerHTML = SEL ? cardHTML(SEL.a) : '<p class="hint">La ligne avant (barre colorée) est ciblée en premier. Les agents derrière sont protégés, mais plus lents à entrer en jeu.</p>';
+  var ok = $('#pok'); ok.className = 'btn primary p' + t; ok.disabled = n < total; ok.textContent = n < total ? 'Valider ' + n + '/' + total : (VT.ultUsable(cap(t), total) ? 'Choisir l’ultime' : 'Valider');
+}
+function tapChip(a) {
+  var k = placed(a);
+  if (k) {
+    if (SEL && SEL.a === a) { delete PL[k]; SEL = { from: 'tray', a: a }; }
+    else SEL = { from: 'cell', a: a, k: k };
+  } else SEL = (SEL && SEL.a === a) ? null : { from: 'tray', a: a };
+  renderPlace();
+}
+function tapCell(x, y) {
+  var k = x + ',' + y, occ = PL[k], s = SEL;
+  if (!s) { if (occ) SEL = { from: 'cell', a: occ, k: k }; }
+  else if (s.from === 'tray') {
+    if (occ) SEL = { from: 'cell', a: occ, k: k };
+    else {
+      PL[k] = s.a; SEL = null;
+      var nx = G.roster[N.role].filter(function (a) { return !placed(a); });
+      if (nx.length) SEL = { from: 'tray', a: nx[0] };
+    }
+  } else {
+    if (s.k === k) SEL = null;
+    else { var o = PL[k]; PL[k] = s.a; if (o) PL[s.k] = o; else delete PL[s.k]; SEL = null; }
+  }
+  renderPlace();
+}
+$('#pauto').onclick = function () {
+  var t = N.role, ys = t === 1 ? [5, 6, 7, 8] : [0, 1, 2, 3], all = [];
+  ys.forEach(function (y) { for (var x = 0; x < 5; x++) all.push(x + ',' + y); });
+  for (var i = all.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)); var z = all[i]; all[i] = all[j]; all[j] = z; }
+  PL = {}; G.roster[t].forEach(function (a, i) { PL[all[i]] = a; });
+  SEL = null; renderPlace();
+};
+$('#pok').onclick = function () {
+  var t = N.role; SEL = null;
+  if (VT.ultUsable(cap(t), G.roster[t].length)) startUlt(); else submitBuild({});
+};
+function submitBuild(spec) {
+  var ph = G.ph; if (!ph || (ph.k !== 'build')) return;
+  act('b' + ph.r + '_' + N.role, { t: N.role, cells: JSON.parse(JSON.stringify(PL)), ult: spec });
+}
+
+/* ---------- ultime du capitaine ---------- */
+function ultKeyCell(def, x, y, t) {
+  var foeRows = t === 1 ? [0, 3] : [5, 8];
+  if (def.type === 'ally') { var a = PL[x + ',' + y]; return !!a && a !== cap(t); }
+  return def.type !== 'none' && y >= foeRows[0] && y <= foeRows[1];
+}
+function startUlt() { G.utgt = null; setStep(1); go('ult'); renderUlt(); }
+function renderUlt() {
+  var t = N.role, c = cap(t), def = VT.ULTS[c], tc = tcol(t), flip = t === 2;
+  $('#uwho').innerHTML = '<span class="t' + t + 'c">★</span> ' + def.name;
+  $('#uhint').innerHTML = def.type === 'none' ? 'S’active seule.<br>Valide pour la lancer.' : def.type === 'ally' ? 'Touche l’allié à protéger.' : def.type === 'row' ? 'Touche une ligne ennemie.' : def.type === 'col' ? 'Touche une colonne ennemie.' : 'Touche une case ennemie.';
+  var spec = def.type === 'none' ? {} : G.utgt;
+  var hl = spec ? VT.ultCells(c, t, spec) : [], hlk = {};
+  hl.forEach(function (q) { hlk[q[0] + ',' + q[1]] = 1; });
+  var ub = $('#uboard'); ub.innerHTML = '';
+  for (var dy = 0; dy < 9; dy++) for (var x = 0; x < 5; x++) {
+    (function (x, y) {
+      var k = x + ',' + y, own = (t === 1 ? y > 4 : y < 4), a = own ? PL[k] : null, can = ultKeyCell(def, x, y, t);
+      var e = h('button', 'uc ' + (y < 4 ? 'a' : y > 4 ? 'b' : 'm') + (can ? ' can' : '') + (hlk[k] ? ' hl' : '') + (spec && spec.x === x && spec.y === y && def.type !== 'none' ? ' pk' : ''), a ? tok(a, t, '', a === c) : '');
+      e.style.setProperty('--tc', tc);
+      if (can) e.onclick = function () { G.utgt = { x: x, y: y }; renderUlt(); };
+      else e.disabled = true;
+      ub.appendChild(e);
+    })(x, flip ? 8 - dy : dy);
+  }
+  $('#ucard').className = 'card c' + t;
+  $('#ucard').innerHTML = '<div class="chead"><b>' + def.name + '</b><span>Ultime de ' + BY[c].name + '</span></div><p>' + def.desc + '</p><p class="hint">Lancé automatiquement à l’ouverture du combat. ' +
+    (def.type === 'ally' ? 'Rien ne se passe si l’allié ne meurt pas.' : 'Les ennemis ne bougent pas avant : vise leur placement probable.') + '</p>';
+  var ok = $('#uok'); ok.className = 'btn primary p' + t; ok.disabled = def.type !== 'none' && !G.utgt;
+  ok.textContent = def.type !== 'none' && !G.utgt ? 'Choisis une cible' : 'Valider l’ultime';
+}
+$('#uok').onclick = function () {
+  var def = VT.ULTS[cap(N.role)];
+  submitBuild(def.type === 'none' ? {} : G.utgt);
+};
+$('#uback').onclick = function () { setStep(0); go('place'); renderPlace(); };
+
+/* ---------- combat : lecture de la simulation (identique sur les deux telephones) ---------- */
+var U = {}, LAST = {}, CELL = 56;
+function py(y) { return G.flip ? 8 - y : y; }
+function buildBoard() {
+  CELL = parseFloat(app.style.getPropertyValue('--cellb')) || 56;
+  G.flip = N.role === 2;   /* chaque joueur voit son camp en bas */
+  var b = $('#board'); b.innerHTML = ''; U = {}; LAST = {};
+  b.style.width = CELL * 5 + 'px'; b.style.height = CELL * 9 + 'px';
+  var bg = h('div', 'bg');
+  for (var y = 0; y < 9; y++) for (var x = 0; x < 5; x++) { var ly = py(y); bg.appendChild(h('i', (ly < 4 ? 'a' : ly > 4 ? 'b' : 'm') + ((x + y) % 2 ? ' alt' : ''))); }
+  b.appendChild(bg);
+  ['zl', 'tl', 'ul'].forEach(function (id) { var l = h('div', 'layer'); l.id = id; b.appendChild(l); });
+  var svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+  svg.setAttribute('class', 'layer'); svg.id = 'fxs'; svg.setAttribute('width', CELL * 5); svg.setAttribute('height', CELL * 9);
+  b.appendChild(svg);
+  var f = h('div', 'layer'); f.id = 'fl'; b.appendChild(f);
+}
+function ensureUnit(su) {
+  if (U[su.id]) return U[su.id];
+  var el = h('div', 'u t' + su.team + (su.summon ? ' sm' : ''));
+  el.style.setProperty('--tc', tcol(su.team));
+  el.innerHTML = '<div class="ui">' + tok(su.agent, su.team, '', su.cap) + '<div class="hb"><i class="hf"></i><i class="sh"></i></div><div class="bd"></div></div>';
+  el.style.transform = 'translate(' + su.x * CELL + 'px,' + py(su.y) * CELL + 'px)';
+  $('#ul').appendChild(el);
+  U[su.id] = { el: el, hf: el.querySelector('.hf'), sh: el.querySelector('.sh'), bd: el.querySelector('.bd') };
+  return U[su.id];
+}
+function applySnap(sn) {
+  sn.units.forEach(function (su) {
+    var u = ensureUnit(su);
+    u.el.style.transform = 'translate(' + su.x * CELL + 'px,' + py(su.y) * CELL + 'px)';
+    u.el.classList.toggle('dead', !su.alive); u.el.classList.toggle('hid', !!su.st.hid);
+    var pc = Math.max(0, su.hp) / su.mhp * 100;
+    u.hf.style.width = pc + '%'; u.hf.classList.toggle('low', pc < 35);
+    u.sh.style.width = Math.min(100, su.sh / su.mhp * 100) + '%';
+    var s = '';
+    if (su.alive) {
+      if (su.st.blind) s += '<b class="a">A</b>';
+      if (su.st.root) s += '<b class="i">I</b>';
+      if (su.st.mark) s += '<b class="m">M</b>';
+      if (su.st.weak) s += '<b class="f">F</b>';
+      if (su.st.sil) s += '<b class="s">S</b>';
+      if (su.st.buff) s += '<b class="u2">B</b>';
+      if (su.st.hid) s += '<b class="h">H</b>';
+    }
+    u.bd.innerHTML = s;
+    LAST[su.id] = { x: su.x, y: su.y, team: su.team, agent: su.agent, alive: su.alive };
+  });
+  var zl = $('#zl'); zl.innerHTML = '';
+  sn.zones.forEach(function (z) { z.cells.forEach(function (c) {
+    var e = h('div', 'zn z' + z.team); e.style.transform = 'translate(' + c[0] * CELL + 'px,' + py(c[1]) * CELL + 'px)'; zl.appendChild(e); }); });
+  var tl = $('#tl'); tl.innerHTML = '';
+  sn.traps.forEach(function (t) {
+    var e = h('div', 'trp', '<i></i>'); e.style.setProperty('--tc', tcol(t.team));
+    e.style.transform = 'translate(' + t.x * CELL + 'px,' + py(t.y) * CELL + 'px)'; tl.appendChild(e); });
+}
+function cx(x) { return (x + .5) * CELL; }
+function cy(y) { return (py(y) + .5) * CELL; }
+function floatTxt(x, y, txt, cls) {
+  var e = h('div', 'fl ' + (cls || ''), txt); e.style.left = cx(x) + 'px'; e.style.top = cy(y) + 'px';
+  $('#fl').appendChild(e); setTimeout(function () { e.remove(); }, 1400);
+}
+function tag(id, txt) {
+  var p = LAST[id]; if (!p) return;
+  var e = h('div', 'sk', txt), row = py(p.y), below = row === 0;
+  e.style.setProperty('--tc', tcol(p.team));
+  e.style.top = (below ? (row + 1) * CELL - 2 : row * CELL + 2) + 'px';
+  e.style.transform = below ? 'translate(-50%,0)' : 'translate(-50%,-100%)';
+  $('#fl').appendChild(e);
+  var w = e.offsetWidth, bw = CELL * 5, x = Math.max(w / 2 + 2, Math.min(bw - w / 2 - 2, cx(p.x)));
+  e.style.left = x + 'px';
+  setTimeout(function () { e.remove(); }, 1650);
+}
+function flashCells(cells, team) {
+  cells.forEach(function (c) {
+    var e = h('div', 'fx'); e.style.setProperty('--tc', tcol(team));
+    e.style.transform = 'translate(' + c[0] * CELL + 'px,' + py(c[1]) * CELL + 'px)'; $('#fl').appendChild(e); setTimeout(function () { e.remove(); }, 950);
+  });
+}
+function ring(x, y, team) {
+  var e = h('div', 'ring'); e.style.setProperty('--tc', tcol(team));
+  e.style.transform = 'translate(' + x * CELL + 'px,' + py(y) * CELL + 'px)'; $('#fl').appendChild(e); setTimeout(function () { e.remove(); }, 950);
+}
+function beam(ax, ay, bx, by, team) {
+  var l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+  l.setAttribute('x1', cx(ax)); l.setAttribute('y1', cy(ay)); l.setAttribute('x2', cx(bx)); l.setAttribute('y2', cy(by));
+  l.setAttribute('class', 'beam'); l.setAttribute('stroke', team === 1 ? '#3AD9C5' : '#FF4655');
+  $('#fxs').appendChild(l); setTimeout(function () { l.remove(); }, 600);
+}
+function ultBanner(team, name, agent) {
+  var e = h('div', 'ub', emblem(agent) + '<span>' + name + '</span>');
+  e.style.setProperty('--tc', tcol(team));
+  var topSide = (team === 2) !== G.flip;
+  e.style.top = (topSide ? CELL * 1.4 : CELL * 6.6) + 'px';
+  $('#fl').appendChild(e); setTimeout(function () { e.remove(); }, 2300);
+}
+function say(team, who, what, tick) {
+  var l = $('#blog'); l.style.borderLeftColor = team ? tcol(team) : 'var(--line)';
+  l.innerHTML = '<b style="color:' + (team ? tcol(team) : 'var(--fg)') + '">' + who + '</b><span>' + what + '</span><span class="tk">' + (tick == null ? '' : tick === 0 ? 'OUVERTURE' : 'TICK ' + tick) + '</span>';
+}
+function playFrame(fr, fast) {
+  var msg = null, ultMsg = null, agg = {}, tk = G.token;
+  fr.ev.forEach(function (e) {
+    var L = LAST[e.a];
+    if (e.t === 'ult') {
+      var CA = LAST[e.a];
+      if (CA) ultMsg = { team: e.team, who: BY[CA.agent].name, what: '★ ' + e.name };
+      if (!fast) { if (CA) ultBanner(e.team, e.name, CA.agent); if (e.cells && e.cells.length) flashCells(e.cells, e.team); }
+    } else if (e.t === 'skill') {
+      if (!fast) { tag(e.a, e.name); if (e.cells) flashCells(e.cells, L ? L.team : 1); }
+      if (L) msg = { team: L.team, who: BY[L.agent].name, what: e.name };
+    } else if (e.t === 'hit') {
+      if (fast) return;
+      var tm = LAST[e.b] ? LAST[e.b].team : 1, att = LAST[e.a] ? LAST[e.a].team : (tm === 1 ? 2 : 1);
+      if (e.k !== 'zone' && e.k !== 'trap' && !(e.ax === e.bx && e.ay === e.by)) beam(e.ax, e.ay, e.bx, e.by, att);
+      var gg = agg[e.b] || (agg[e.b] = { x: e.bx, y: e.by, v: 0, ab: 0 }); gg.v += e.v; gg.ab += e.ab;
+      var u = U[e.b]; if (u) { u.el.classList.add('hit'); setTimeout(function () { u.el.classList.remove('hit'); }, 160); }
+    } else if (e.t === 'heal') {
+      var P = LAST[e.b]; if (P && !fast) floatTxt(P.x, P.y, '+' + e.v, e.k === 'devour' ? 'big' : 'heal');
+      if (e.k === 'devour' && LAST[e.a]) msg = { team: LAST[e.a].team, who: BY[LAST[e.a].agent].name, what: 'Dévorer' };
+    } else if (e.t === 'shield') {
+      var Q = LAST[e.b]; if (Q && !fast) floatTxt(Q.x, Q.y, '+' + e.v, 'abs');
+    } else if (e.t === 'tele') {
+      if (!fast) ring(e.to[0], e.to[1], LAST[e.id] ? LAST[e.id].team : 1);
+    } else if (e.t === 'die') {
+      var D = LAST[e.id]; if (D) { msg = { team: D.team, who: BY[D.agent].name, what: 'éliminé' }; if (!fast) ring(D.x, D.y, D.team); }
+    } else if (e.t === 'revive') {
+      var R = LAST[e.id]; if (R && !fast) { tag(e.id, 'Revient !'); ring(e.x, e.y, R.team); }
+      if (R) msg = { team: R.team, who: BY[R.agent].name, what: 'revient à la vie' };
+    } else if (e.t === 'trap') {
+      if (!fast) flashCells([[e.x, e.y]], LAST[e.id] ? 3 - LAST[e.id].team : 1);
+      if (LAST[e.id]) msg = { team: 3 - LAST[e.id].team, who: 'Piège', what: BY[LAST[e.id].agent].name + ' immobilisé' };
+    }
+  });
+  for (var id in agg) floatTxt(agg[id].x, agg[id].y, '-' + agg[id].v, agg[id].ab >= agg[id].v ? 'abs' : '');
+  if (fast) applySnap(fr.snap);
+  else setTimeout(function () { if (tk === G.token) applySnap(fr.snap); }, 420 / G.speed);
+  if (!fast) {
+    if (ultMsg) msg = ultMsg;
+    if (msg) say(msg.team, msg.who, msg.what, fr.tick);
+    else { var lg = $('#blog .tk'); if (lg) lg.textContent = fr.tick === 0 ? 'OUVERTURE' : 'TICK ' + fr.tick; }
+  }
+}
+function playBattle(first) {
+  var token = ++G.token, sim = G.sim; G.skipping = false;
+  if (!sim) return;
+  buildBoard();
+  sim.start.units.forEach(ensureUnit); applySnap(sim.start);
+  say(0, 'Combat', 'Ouverture : ultimes, drones, pièges, tourelles…', null);
+  $('#sheet').hidden = true;
+  (first ? banner('Combat') : wait(200)).then(function () {
+    var i = 0;
+    function step() {
+      if (token !== G.token) return;
+      if (G.skipping) { while (i < sim.frames.length) playFrame(sim.frames[i++], true); return finish(); }
+      if (i >= sim.frames.length) return finish();
+      var fr = sim.frames[i++];
+      playFrame(fr, false);
+      var big = fr.ev.some(function (e) { return e.t === 'ult'; }), actv = fr.ev.some(function (e) { return e.t === 'skill' || e.t === 'revive' || e.t === 'die'; });
+      setTimeout(step, (i === 1 ? (big ? 2900 : 1700) : (actv ? 1700 : 1250)) / G.speed);
+    }
+    function finish() { if (token === G.token) setTimeout(function () { if (token === G.token) afterBattle(); }, G.skipping ? 150 : 1000); }
+    step();
+  });
+}
+$('#bspeed').onclick = function () { G.speed = G.speed === 1 ? 2 : 1; this.textContent = '×' + G.speed; };
+$('#bskip').onclick = function () { G.skipping = true; };
+
+function afterBattle() {
+  var r = G.simR, first = !G.shown[r];
+  G.shown[r] = true;
+  if (first) refresh(); else showSheet(r);
+}
+function showSheet(r) {
+  var sim = simOf(r); if (!sim) return;
+  G.sim = sim; G.simR = r;
+  var res = sim.result, last = sim.frames[sim.frames.length - 1].snap, w = res.winner, loser = w ? 3 - w : 0;
+  var hp = hpAfter(r), over = hp[1] <= 0 || hp[2] <= 0;
+  setStep(3);
+  renderHUD(r, hp, G.hurt[r] ? 0 : loser); G.hurt[r] = true;
+  var sh = $('#sh-p'); sh.style.setProperty('--tc', w ? tcol(w) : 'var(--fg)');
+  $('#sh-k').textContent = 'Manche ' + r + ' · ' + res.ticks + ' ticks';
+  $('#sh-t').innerHTML = over ? '<span class="t' + w + 'c">Joueur ' + w + '</span><br>gagne la partie' :
+    w ? '<span class="t' + w + 'c">Joueur ' + w + '</span> remporte la manche' : 'Égalité';
+  var sv = $('#sh-s'); sv.innerHTML = '';
+  last.units.forEach(function (u) { if (res.survivors.indexOf(u.id) >= 0) sv.appendChild(h('div', '', tok(u.agent, u.team, ''))); });
+  $('#sh-d').innerHTML = w ? '<b>' + res.dmg + '</b><span>survivant' + (res.dmg > 1 ? 's' : '') + ' : Joueur ' + loser + ' perd ' + res.dmg + ' PV</span>' :
+    '<span style="font-size:16px;color:var(--mute);font-weight:600;text-transform:none;letter-spacing:0">Aucun agent ne survit des deux côtés : personne ne perd de PV.</span>';
+  $('#sh-n').onclick = function () {
+    if (over) newGame();
+    else { act('n' + r + '_' + N.role, {}); }
+  };
+  $('#sh-r').onclick = function () { G.sim = simOf(r); G.simR = r; setStep(2); renderHUD(r, hpAfter(r - 1)); playBattle(false); };
+  updNext(r, over);
+  $('#sheet').hidden = false;
+}
+function updNext(r, over) {
+  var n = $('#sh-n');
+  if (over) { n.disabled = false; n.textContent = 'Nouvelle partie'; return; }
+  var mine = !!N.log['n' + r + '_' + N.role];
+  n.disabled = mine; n.textContent = mine ? 'En attente de l’ami…' : 'Manche suivante';
+}
+
+fit();
+showIntro();
+})();
+</script>
+</body>
+</html>
